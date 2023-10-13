@@ -60,14 +60,15 @@ def main():
 	occupied_ratio = 0.5
 
 	# [alpha, beta, p, q]
-	probs = [0.6, 0.1, 1, 0] # high density phase
+	probs = [0.2, 0.7, 1, 0] # high density phase
 	# probs = [0.3, 0.6, 0.8, 0] # low density phase
 	#probs = [1,1,1,0]
 
 	# create initial state
-	state = init_state(L, occupied_ratio, mode='endbulk')
+	state = init_state(L, occupied_ratio, mode='frontbulk')
 	#print(state)
 	density = np.zeros(iterations)
+	random = 0
 	# simulation
 	t0 = time.time()
 	for i in range(iterations):
@@ -84,7 +85,15 @@ def main():
 	fig = plt.figure()
 	ax = fig.add_subplot(111, title='Evolution of density', xlabel='iterations', ylabel='density')
 	ax.plot(np.arange(iterations), density, marker='.', lw=0)
-	ax.plot(np.full((iterations,), 1-probs[1]), color='red')
+	if probs[0] > probs[1] and probs[0] < 0.5:
+		ax.plot(np.full((iterations,), 1-probs[1]), color='red', label='HD')
+	if probs[0] < probs[1] and probs[0] < 0.5:
+		ax.plot(np.full((iterations,), probs[0]), color='red', label='LD')
+	elif probs[0] > 0.5 and probs[1] > 0.5:
+		ax.plot(np.full((iterations,), 0.5), color='red', label='MC')
+	else:
+		pass
+	ax.legend()
 	plt.show()
 
 if __name__=='__main__':
