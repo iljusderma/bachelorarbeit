@@ -36,7 +36,7 @@ def inject(state, alpha):
 			state[0] = np.random.choice(2, 1, p=[1-alpha, alpha])[0]
 	return state
 
-def init_state(L, ratio: float, mode='random'):
+def init_state(L, ratio : float =0.5, mode='random'):
 	'''
 	L: number of sites
 	ratio: ones/sites
@@ -54,23 +54,8 @@ def init_state(L, ratio: float, mode='random'):
 	else:
 		print(mode, 'is unknown. Use ["random", "lbulk", "rbulk"] instead.')
 
-def main():
-	print(__doc__)
-	L = 1000
-	iterations = 15*1000
-	occupied_ratio = 0.5
-
-	# [alpha, beta, p, q]
-	#probs = [0.6, 0.3, 0.6, 0] # high density phase
-	probs = [0.3, 0.6, 0.7, 0] # low density phase
-	#probs = [1,1,1,0]
-
-	# create initial state
-	state = init_state(L, occupied_ratio, 'lbulk')
-	#print(state)
+def update(iterations, L, state, probs):
 	density = np.zeros(iterations)
-	# simulation
-	t0 = time.time()
 	for i in range(iterations):
 		state = eject(state, probs[1])
 		# t2 = time.time()
@@ -80,8 +65,28 @@ def main():
 		state = inject(state, probs[0])
 		# calculate density
 		density[i] = np.sum(state)/L
+	return density
+
+
+def main():
+	print(__doc__)
+	L = 1000
+	iterations = 15*1000
+
+	# [alpha, beta, p, q]
+	#probs = [0.6, 0.3, 0.6, 0] # high density phase
+	probs = [0.3, 0.6, 0.7, 0] # low density phase
+	#probs = [1,1,1,0]
+
+	# create initial state
+	state = init_state(L)
+	t0 = time.time()
+	# simulation
+	density = update(iterations, L, state, probs)
 	t1=time.time()
 	print('needed time: ', (t1-t0))
+
+	# plotting the densities
 	fig = plt.figure()
 	ax = fig.add_subplot(111, title='Evolution of density', xlabel='iterations', ylabel='density')
 	ax.plot(np.arange(iterations), density, marker='.', lw=0)
@@ -93,6 +98,7 @@ def main():
 		ax.plot(np.full((iterations,), 0.5), color='red', label='MC')
 	else:
 		pass
+
 	ax.legend()
 	plt.show()
 
