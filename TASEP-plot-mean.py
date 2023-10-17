@@ -6,7 +6,7 @@ def get_rates(string):
     return np.array(string.split('/')[-1][:-4].split('-')[:-1]).astype(float)/100
 
 # read csv
-path = "/home2/ilja/Documents/Bachelorarbeit/bachelorarbeit/30-60-80-0-1000.csv"
+path = "/home2/ilja/Documents/Bachelorarbeit/bachelorarbeit/60-30-70-0-1000.csv"
 df = pd.read_csv(path, header=None, index_col=False)
 density = df.to_numpy()
 # calculate the mean over all rows
@@ -14,8 +14,6 @@ average_density = np.mean(density, axis=0)
 rates = get_rates(path)
 print(rates)
 iterations = 50*1000
-
-
 
 # plot
 fig = plt.figure()
