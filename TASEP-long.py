@@ -28,5 +28,5 @@ for r in range(Runs):
     chain.initialize_state()
     density[r], current[r] = TASEP.iterate(iterations, chain, current_stepsize)
 
-save_data(density, [ i for i, j in locals().items() if j == density][0])
-save_data(current, [ i for i, j in locals().items() if j == current][0])
+save_data(density, 'density')
+save_data(current, 'current')
