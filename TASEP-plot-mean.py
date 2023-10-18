@@ -5,30 +5,31 @@ import matplotlib.pyplot as plt
 def get_rates(string):
     return np.array(string.split('/')[-1][:-4].split('-')[:-1]).astype(float)/100
 
-def plot_errorbars(path, average_density, err):
+def plot_errorbars(path, average_density, density_err, average_current):
     rates = get_rates(path)
     iterations = len(average_density)
     fig = plt.figure()
-    ax = fig.add_subplot(111, title='Evolution of density', xlabel='iterations', ylabel='density')
-    # plot error band
+    # plot curve with error band 
+    ax1 = fig.add_subplot(221, title='Evolution of density', xlabel='iterations', ylabel='density')
     step = 10
-    ax.errorbar(np.arange(iterations)[::step], average_density[::step], yerr=err[::step], fmt=',', ecolor='grey', color='orange')
+    ax1.errorbar(np.arange(iterations)[::step], average_density[::step], yerr=density_err[::step], fmt=',', ecolor='grey', color='orange')
+
     # plot analytical prediction
     if rates[0] > rates[1] and rates[1] < 0.5:
-        ax.plot(np.full((iterations,), 1-rates[1]), color='red', label='HD')
+        ax1.plot(np.full((iterations,), 1-rates[1]), color='red', label='HD')
     if rates[0] < rates[1] and rates[0] < 0.5:
-        ax.plot(np.full((iterations,), rates[0]), color='red', label='LD')
+        ax1.plot(np.full((iterations,), rates[0]), color='red', label='LD')
     elif rates[0] > 0.5 and rates[1] > 0.5:
-        ax.plot(np.full((iterations,), 0.5), color='red', label='MC')
+        ax1.plot(np.full((iterations,), 0.5), color='red', label='MC')
     else:
         pass
-    ax.legend()
-    plt.show()
-
-def plot_errorcurve(err):
-    fig = plt.figure()
-    ax = fig.add_subplot(111, title='Error evolution over the iterations', xlabel='iterations', ylabel='Error')
-    ax.plot(err)
+    ax1.legend()
+    # plot error curve
+    ax2 = fig.add_subplot(222, title='Error evolution over the iterations', xlabel='iterations', ylabel='Error')
+    ax2.plot(density_err)
+    # plot current
+    ax3 = fig.add_subplot(223, title='Evolution of the current', xlabel='iterations', ylabel='current')
+    ax3.plot(average_current)
     plt.show()
 
 # read csv
@@ -43,5 +44,4 @@ dx = np.mean(density**2, axis=0) - average_density**2
 # Standardabweichung
 err = np.std(density, axis=0)
 
-# plot_errorbars(path, average_density, err)
-plot_errorcurve(err)
+plot_errorbars(path, average_density, err)
