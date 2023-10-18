@@ -19,7 +19,7 @@ iterations = 50*1000
 Runs = 100
 current_stepsize = 100
 density = np.zeros((Runs, iterations))
-current = np.zeros((Runs, (iterations - 1)//current_stepsize))
+current = np.zeros((Runs, iterations//current_stepsize))
 
 # perform various simulations
 for r in range(Runs):
