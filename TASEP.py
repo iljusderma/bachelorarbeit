@@ -67,17 +67,19 @@ class Chain:
 
 def iterate(iterations, chain, current_steps=100):
 		density = np.zeros(iterations)
-		current = np.zeros(iterations//current_steps) 
+		current = np.zeros(iterations//current_steps)
+		states = np.zeros((iterations, chain.L))
 		for i in range(iterations):
 			chain.eject()
 			chain.hop()
 			chain.inject()
 			# calculate density
+			states[i] = chain.state
 			density[i] = np.sum(chain.state)/chain.L
 			if (i+1)%current_steps == 0:
 				current[i//current_steps] = chain.hop_counter/current_steps
 				chain.reset_hop_counter()
-		return density, current
+		return states, density, current
 
 def plot_density(density, probs):
 	iterations = len(density)
@@ -102,17 +104,26 @@ def plot_current(current):
 	ax.plot(np.arange(iterations)[::10], current, marker='.', lw=0)
 	plt.show()
 
+def plot_densityprofile(densityprofile):
+	fig = plt.figure()
+	ax = fig.add_subplot(111, title='Density profile', xlabel='lattice site i', ylabel='density at site i')
+	ax.plot(densityprofile)
+	plt.show()
+
 def main():
 	print(__doc__)
 	L = 1000
 	iterations = 10*1000
 	# [alpha, beta, p, q]
 	rates = [0.3, 0.6, 0.7, 0]
+	t0 = time.time()
 	chain = Chain(L, rates)
 	chain.initialize_state()
-	density, current = iterate(iterations, chain)
+	states, density, current = iterate(iterations, chain)
+	densityprofile = np.mean(states, axis=0)
 	#plot_density(density, rates)
-	plot_current(current)
+	#plot_current(current)
+	#plot_densityprofile(densityprofile)
 
 if __name__=='__main__':
 	main()
