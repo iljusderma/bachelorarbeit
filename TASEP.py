@@ -107,12 +107,12 @@ def plot_current(current):
 def plot_densityprofile(densityprofile):
 	fig = plt.figure()
 	ax = fig.add_subplot(111, title='Density profile', xlabel='lattice site i', ylabel='density at site i')
-	ax.plot(densityprofile)
+	ax.plot(densityprofile, lw=0, marker='.')
 	plt.show()
 
 def main():
 	print(__doc__)
-	L = 1000
+	L = 500
 	iterations = 10*1000
 	# [alpha, beta, p, q]
 	rates = [0.3, 0.6, 0.7, 0]
@@ -120,9 +120,11 @@ def main():
 	chain = Chain(L, rates)
 	chain.initialize_state()
 	states, density, current = iterate(iterations, chain)
-	densityprofile = np.mean(states, axis=0)
-	#plot_density(density, rates)
-	#plot_current(current)
+	densityprofile = np.mean(states[2000:], axis=0)
+	print(time.time() - t0)
+	print()
+	plot_density(density, rates)
+	plot_current(current)
 	#plot_densityprofile(densityprofile)
 
 if __name__=='__main__':
