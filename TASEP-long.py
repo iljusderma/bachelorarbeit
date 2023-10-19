@@ -3,7 +3,7 @@ import numpy as np
 import TASEP
 import pandas as pd
 
-def save_data(data, name):
+def save_data(data, name, rates):
     # create CSV
     title = '{}-{}-{}-{}-{}-' + name + '.csv'.format(*(100*rates).astype(int), L)
     with open(title, 'w', newline='') as csvfile:
@@ -27,6 +27,5 @@ for r in range(Runs):
     chain = TASEP.Chain(L, rates)
     chain.initialize_state()
     density[r], current[r] = TASEP.iterate(iterations, chain, current_stepsize)
-
-save_data(density, 'density')
-save_data(current, 'current')
+    save_data(density, 'density', rates)
+    save_data(current, 'current', rates)
