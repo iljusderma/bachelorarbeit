@@ -5,7 +5,7 @@ import pandas as pd
 
 def save_data(data, name, rates):
     # create CSV
-    title = '{}-{}-{}-{}-{}-' + name + '.csv'.format(*(100*rates).astype(int), L)
+    title = '{}-{}-{}-{}-{}-'.format(*(100*rates).astype(int), L) + name + '.csv'
     with open(title, 'w', newline='') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
