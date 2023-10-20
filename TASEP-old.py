@@ -17,14 +17,14 @@ def hop(state, p):
 	# generating the random values each is very inefficient
 	occupied_sites = np.where(state==1)[0]
 	random_val = np.random.choice(2, 2*len(occupied_sites), p=[1 - p, p])
-	for index, site in enumerate(reversed(occupied_sites)):
+	for index, site in enumerate(occupied_sites):
 		if site%2 == 0 and state[site + 1] == 0 and random_val[index] == 1:
 			state[site] -= 1
 			state[site + 1] += 1
 	# last site excluded bc i+1 out of bounds
 	occupied_sites = np.where(state[:-1]==1)[0]
 	random_val = np.random.choice(2, len(occupied_sites), p=[1 - p, p])
-	for index, site in enumerate(reversed(occupied_sites)):
+	for index, site in enumerate(occupied_sites):
 		if site%2 == 1 and state[site + 1] == 0 and random_val[index] == 1:
 			state[site] -= 1
 			state[site + 1] += 1
