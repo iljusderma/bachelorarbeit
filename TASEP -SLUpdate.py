@@ -35,31 +35,33 @@ class Chain:
 		if self.state[-1] == 1:
 				self.state[-1] = np.random.choice(2, 1, p=[self.beta, 1 - self.beta])[0]
 	
-	def hop(self):
+	def hop(self, index):
 		# sublattice-parallel update
 		# first: (1,2)(3,4)(5,6)...
 		# then: (2,3)(4,5)
 		# for higher efficiency I tried to loop through occupied sites not all sites
 		# generating the random values each is very inefficient
-		occupied_sites = np.where(self.state==1)[0]
-		random_val = np.random.choice(2, 2*len(occupied_sites), p=[1 - self.p, self.p])
-		for index, site in enumerate(occupied_sites):
-			if site%2 == 0 and self.state[site + 1] == 0 and random_val[index] == 1:
-				# perform hop
-				self.state[site] -= 1
-				self.state[site + 1] += 1
-				if site == self.L/2:
-					self.hop_counter += 1
-		# last site excluded bc i+1 out of bounds
-		occupied_sites = np.where(self.state[:-1]==1)[0]
-		random_val = np.random.choice(2, len(occupied_sites), p=[1 - self.p, self.p])
-		for index, site in enumerate(occupied_sites):
-			if site%2 == 1 and self.state[site + 1] == 0 and random_val[index] == 1:
-				# perform hop
-				self.state[site] -= 1
-				self.state[site + 1] += 1
-				if site == self.L/2:
-					self.hop_counter += 1
+		if index%2 == 0:
+			occupied_sites = np.where(self.state==1)[0]
+			random_val = np.random.choice(2, 2*len(occupied_sites), p=[1 - self.p, self.p])
+			for index, site in enumerate(occupied_sites):
+				if site%2 == 0 and self.state[site + 1] == 0 and random_val[index] == 1:
+					# perform hop
+					self.state[site] -= 1
+					self.state[site + 1] += 1
+					if site == self.L/2:
+						self.hop_counter += 1
+		else:
+			# last site excluded bc i+1 out of bounds -> state[:-1]
+			occupied_sites = np.where(self.state[:-1]==1)[0]
+			random_val = np.random.choice(2, len(occupied_sites), p=[1 - self.p, self.p])
+			for index, site in enumerate(occupied_sites):
+				if site%2 == 1 and self.state[site + 1] == 0 and random_val[index] == 1:
+					# perform hop
+					self.state[site] -= 1
+					self.state[site + 1] += 1
+					if site == self.L/2:
+						self.hop_counter += 1
 
 	def inject(self):
 		if self.state[0] == 0:
@@ -71,7 +73,7 @@ def iterate(iterations, chain, current_steps=100):
 		states = np.zeros((iterations, chain.L))
 		for i in range(iterations):
 			chain.eject()
-			chain.hop()
+			chain.hop(i)
 			chain.inject()
 			# calculate density
 			states[i] = chain.state
@@ -106,14 +108,15 @@ def plot_current(current):
 
 def plot_densityprofile(densityprofile, probs):
 	fig = plt.figure()
-	ax = fig.add_subplot(111, title='Density profile', xlabel='Lattice site i', ylabel='Density at site i')
+	ax = fig.add_subplot(111, title=r'Density profile $(\alpha, \beta, p, q)=$' + str(probs), 
+	xlabel='Lattice site i', ylabel='Density at site i')
 	ax.plot(densityprofile, lw=0, marker='.')
 	if probs[0] > probs[1] and probs[1] < 0.5:
-		ax.plot(np.arange(len(densityprofile), 1-probs[1]), color='red', label='HD')
+		ax.plot(np.full(len(densityprofile), 1-probs[1]), color='red', label='HD')
 	if probs[0] < probs[1] and probs[0] < 0.5:
-		ax.plot(np.arange(len(densityprofile), probs[0]), color='red', label='LD')
+		ax.plot(np.full(len(densityprofile), probs[0]), color='red', label='LD')
 	elif probs[0] > 0.5 and probs[1] > 0.5:
-		ax.plot(np.arange(len(densityprofile), 0.5), color='red', label='MC')
+		ax.plot(np.full(len(densityprofile), 0.5), color='red', label='MC')
 	else:
 		pass
 	ax.legend()
@@ -121,20 +124,18 @@ def plot_densityprofile(densityprofile, probs):
 
 def main():
 	print(__doc__)
-	L = 10
-	iterations = 10
+	L = 500
+	iterations = 20*1000
 	# [alpha, beta, p, q]
-	rates = [0.3, 0.6, 1, 0]
+	rates = [0.5, 0.5, 1, 0]
 	t0 = time.time()
 	chain = Chain(L, rates)
 	chain.initialize_state()
 	states, density, current = iterate(iterations, chain)
-	print(states)
-	#densityprofile = np.mean(states[2000:], axis=0)
+	densityprofile = np.mean(states[2000:], axis=0)
 	print(time.time() - t0)
-	#plot_density(density, rates)
-	#print(densityprofile[:20])
-	#plot_densityprofile(densityprofile, rates)
+	plot_density(density, rates)
+	plot_densityprofile(densityprofile, rates)
 
 if __name__=='__main__':
 	main()
