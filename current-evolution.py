@@ -29,8 +29,7 @@ for index, current in np.ndenumerate(CURRENT):
     chain.initialize_state()
     CURRENT[index] = np.mean(TASEP.iterate(iterations, chain, current_stepsize)[-1])
 
-fig = plt.figure()
-ax = fig.add_subplot(111, aspect=1.0, title='', xlabel='', ylabel='')
-ax.imshow(CURRENT)
-
+fig, ax = plt.subplots()
+im = ax.imshow(CURRENT)
+plt.show()
 save_data(CURRENT, 'current')

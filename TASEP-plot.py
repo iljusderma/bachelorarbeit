@@ -34,6 +34,7 @@ def plot_errorbars(path, average_data, err):
     plt.show()
 
 # read csv
+'''
 current_path = "/home/ilja/Documents/coding/bachelorarbeit/60-30-70-0-1000-current.csv"
 density_path = "/home/ilja/Documents/coding/bachelorarbeit/60-30-70-0-1000-density.csv"
 density = read_data(density_path)
@@ -48,4 +49,11 @@ dx = np.mean(density**2, axis=0) - average_density**2
 density_err = np.std(density, axis=0)
 current_err = np.std(current, axis=0)
 # plot results
-plot_errorbars(current_path, average_current, current_err)
+plot_errorbars(current_path, average_current, current_err)'''
+
+path = "/home/ilja/Documents/coding/bachelorarbeit/current.csv"
+CURRENT = read_data(path)
+print(CURRENT.shape)
+fig, ax = plt.subplots()
+im = ax.imshow(CURRENT, origin='lower', cmap='plasma')
+plt.show()
