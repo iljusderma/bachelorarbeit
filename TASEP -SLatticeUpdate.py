@@ -125,16 +125,16 @@ def plot_densityprofile(densityprofile, probs):
 def main():
 	print(__doc__)
 	L = 500
-	iterations = 20*1000
+	iterations = 10*1000
 	# [alpha, beta, p, q]
-	rates = [0.5, 0.5, 1, 0]
+	rates = [0.3, 0.3, 1, 0]
 	t0 = time.time()
 	chain = Chain(L, rates)
 	chain.initialize_state()
 	states, density, current = iterate(iterations, chain)
 	densityprofile = np.mean(states[2000:], axis=0)
 	print(time.time() - t0)
-	plot_density(density, rates)
+	#plot_density(density, rates)
 	plot_densityprofile(densityprofile, rates)
 
 if __name__=='__main__':
