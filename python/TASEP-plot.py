@@ -51,9 +51,13 @@ current_err = np.std(current, axis=0)
 # plot results
 plot_errorbars(current_path, average_current, current_err)'''
 
-path = "/home/ilja/Documents/coding/bachelorarbeit/current.csv"
+path = "/home/ilja/Documents/coding/bachelorarbeit/python/current-50.csv"
 CURRENT = read_data(path)
 print(CURRENT.shape)
 fig, ax = plt.subplots()
-im = ax.imshow(CURRENT, origin='lower', cmap='plasma')
+im = ax.imshow(CURRENT, origin='lower', cmap='plasma', extent=[0,1,0,1])
+ax.set_xlabel(r"$\beta$")
+ax.set_ylabel(r"$\alpha$")
+fig.colorbar(im, label='Mean current', location='top')
+
 plt.show()
