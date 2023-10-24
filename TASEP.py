@@ -104,26 +104,37 @@ def plot_current(current):
 	ax.plot(np.arange(iterations)[::10], current, marker='.', lw=0)
 	plt.show()
 
-def plot_densityprofile(densityprofile):
+def plot_densityprofile(densityprofile, probs):
 	fig = plt.figure()
-	ax = fig.add_subplot(111, title='Density profile', xlabel='lattice site i', ylabel='density at site i')
-	ax.plot(densityprofile)
+	ax = fig.add_subplot(111, title='Density profile', xlabel='Lattice site i', ylabel='Density at site i')
+	ax.plot(densityprofile, lw=0, marker='.')
+	if probs[0] > probs[1] and probs[1] < 0.5:
+		ax.plot(np.arange(len(densityprofile), 1-probs[1]), color='red', label='HD')
+	if probs[0] < probs[1] and probs[0] < 0.5:
+		ax.plot(np.arange(len(densityprofile), probs[0]), color='red', label='LD')
+	elif probs[0] > 0.5 and probs[1] > 0.5:
+		ax.plot(np.arange(len(densityprofile), 0.5), color='red', label='MC')
+	else:
+		pass
+	ax.legend()
 	plt.show()
 
 def main():
 	print(__doc__)
-	L = 1000
-	iterations = 10*1000
+	L = 10
+	iterations = 10
 	# [alpha, beta, p, q]
-	rates = [0.3, 0.6, 0.7, 0]
+	rates = [0.3, 0.6, 1, 0]
 	t0 = time.time()
 	chain = Chain(L, rates)
 	chain.initialize_state()
 	states, density, current = iterate(iterations, chain)
-	densityprofile = np.mean(states, axis=0)
+	print(states)
+	#densityprofile = np.mean(states[2000:], axis=0)
+	print(time.time() - t0)
 	#plot_density(density, rates)
-	#plot_current(current)
-	#plot_densityprofile(densityprofile)
+	#print(densityprofile[:20])
+	#plot_densityprofile(densityprofile, rates)
 
 if __name__=='__main__':
 	main()
