@@ -127,7 +127,7 @@ def main():
 	L = 500
 	iterations = 10*1000
 	# [alpha, beta, p, q]
-	rates = [0.3, 0.3, 1, 0]
+	rates = [0.3, 0.8, 1, 0]
 	t0 = time.time()
 	chain = Chain(L, rates)
 	chain.initialize_state()
