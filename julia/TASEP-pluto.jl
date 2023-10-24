@@ -5,7 +5,10 @@ using Markdown
 using InteractiveUtils
 
 # ╔═╡ 042a13c0-a708-412a-964f-43cec8a1d066
-using Plots, Statistics, Random, LaTeXStrings
+begin
+	using Plots, Statistics, Random, LaTeXStrings, PlotThemes
+	theme(:juno)
+end
 
 # ╔═╡ cf402b6d-43f4-442c-9aed-6ef2851efb1a
 md"# TASEP-Model"
@@ -26,41 +29,52 @@ function eject(state::Vector, beta::Float64)
 end
 
 # ╔═╡ 1fccb3f3-1c97-4663-b03b-219a3875aea4
-function SLhop(state::Vector, p::Float64, index::Int64)
+function SLhop(state::Vector, p::Float64, index::Int64, hop_counter)
+	L = length(state)
     if index%2 == 0
-        rand_vals = rand(length(state))
-        for i in 1:(length(state)-1)
+        rand_vals = rand(L)
+        for i in 1:(L-1)
             if i%2 == 0 && state[i] == 1 && state[i + 1] == 0 && rand_vals[i] < p
                 state[i] -= 1
                 state[i + 1] += 1
+				if i == L/2
+					hop_counter += 1
+				end
             end
         end
     else
-        rand_vals = rand(length(state))
-        for i in 1:(length(state)-1)
+        rand_vals = rand(L)
+        for i in 1:(L-1)
             if i%2 == 1 && state[i] == 1 && state[i + 1] == 0 && rand_vals[i] < p
                 state[i] -= 1
                 state[i + 1] += 1
+				if i == L/2
+					hop_counter += 1
+				end
             end
         end
     end
-    return state
+    return state, hop_counter
 end
 
 # ╔═╡ fed5059a-13be-454f-a2a5-7566c330052d
-function RANDhop(state::Vector, p::Float64, index::Int64)
+function RANDhop(state::Vector, p::Float64, index::Int64, hop_counter)
+	L = length(state)
 	# sequence in random order
-	sequence = shuffle(1:(length(state)-1))
+	sequence = shuffle(1:(L-1))
 	# generate random values for p
-	rand_vals = rand(length(state))
+	rand_vals = rand(L)
 	# loop through all sites in random order (sequence)
 	for site in sequence
 		if state[site] == 1 && state[site + 1] == 0 && rand_vals[site] < p
 			state[site] -= 1
             state[site + 1] += 1
+			if site == div(L, 2)
+				hop_counter += 1
+			end
 		end
 	end
-    return state
+    return state, hop_counter
 end
 
 # ╔═╡ a80d3a63-85c6-4d51-9b6d-0184da030933
@@ -94,47 +108,79 @@ md" $\longrightarrow$ I think at this point finite scaling is also not helping."
 
 # ╔═╡ 82abb8e7-6bde-4ac4-bfd5-c26a09fff88b
 begin
-	L = 500
+	L = 50
 	iterations = 100*1000
 	occupied_ratio = 0.5
-	rates = [0.4, 0.9, 1, 0]
+	rates = [0.2, 0.7, 1, 0]
+	flux_steps = 500
 	state = initialState(L, occupied_ratio)
-	all_states = zeros(Float64, iterations, L)
 	println("Initialized variables")
 end
 
 # ╔═╡ 06cd96d2-7256-11ee-1814-11b4f51fcb33
-function SLUpdate(iterations, state, rates, all_states)
+function SLUpdate(iterations, state, rates, flux_steps)
+	all_states = zeros(Float64, iterations, L)
+	FLUX = zeros(div(iterations, flux_steps))
+	hop_counter = 0
 	for i in 1:iterations
 		eject(state, rates[2])
-		SLhop(state, rates[3], i)
+		state, hop_counter = SLhop(state, rates[3], i, hop_counter)
 		inject(state, rates[1])
 		all_states[i, :] = state
+		if i%flux_steps == 0
+			FLUX[div(i, flux_steps)] = hop_counter/flux_steps
+			hop_counter = 0
+		end
 	end
-	return all_states
+	return all_states, FLUX
 end
 
 # ╔═╡ 868961d5-3f10-4b29-9ac7-e4479bdff28c
-function RANDUpdate(iterations, state, rates, all_states)
+function RANDUpdate(iterations, state, rates, flux_steps)
+	all_states = zeros(Float64, iterations, L)
+	FLUX = zeros(div(iterations, flux_steps))
+	hop_counter = 0
 	for i in 1:iterations
 		eject(state, rates[2])
-		RANDhop(state, rates[3], i)
+		state, hop_counter = RANDhop(state, rates[3], i, hop_counter)
 		inject(state, rates[1])
 		all_states[i, :] = state
+		if i%flux_steps == 0
+			FLUX[div(i, flux_steps)] = hop_counter/flux_steps
+			hop_counter = 0
+		end
 	end
-	return all_states
+	return all_states, FLUX
 end
 
 # ╔═╡ d01038ec-a149-4f28-8284-9744ada3c702
 begin
-	RANDUpdate(iterations, state, rates, all_states)
-	cut = L # cut data to exclude beginning phase (levelling) which is approx L
-	densityprofile = vec(mean(all_states, dims=1))
-	total_density = mean(all_states[cut:iterations,:], dims=2)
+	all_states, FLUX = SLUpdate(iterations, state, rates, flux_steps)
+	popfirst!(FLUX) # delete first element bc bad measurement
+	# cut data to exclude beginning phase (levelling) which is approx L
+	cut_states = all_states[L:iterations, :]
+	densityprofile = vec(mean(cut_states, dims=1))
+	total_density = mean(cut_states, dims=2)
 	scatter(1:L, densityprofile, label="$rates", title="Mean density per lattice site", ms=2, msw=0)
 	plot!(1:L, zeros(L) .+ 0.3, color="red")
 	ylabel!(L"\langle \rho_i \rangle")
 	xlabel!("Lattice site "*L"i")
+end
+
+# ╔═╡ 6e913af5-baf9-407a-a46a-67e114bf2724
+begin
+	scatter(1:(iterations - L+1), total_density, label="$rates", title="Time evolution of the density", ms=2, msw=0)
+	ylabel!(L"\langle \rho \rangle")
+	xlabel!("Iterations")
+end
+
+# ╔═╡ 6cca9b29-38da-486e-ab06-e2277f2b122f
+scatter(1:div(iterations,flux_steps), FLUX)
+
+# ╔═╡ 974c35fe-cbc6-44a4-8cc7-2072b14938f6
+begin
+	println(mean(FLUX))
+	println(rates[1]*(1-rates[1]))
 end
 
 # ╔═╡ f0d6d960-2e9d-4278-8084-824b7ec0427a
@@ -147,12 +193,14 @@ The average density per lattice site was here again not as expected. The deviati
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
+PlotThemes = "ccf2f8ad-2431-5c83-bf29-c5338b663b6a"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [compat]
 LaTeXStrings = "~1.3.0"
+PlotThemes = "~3.1.0"
 Plots = "~1.39.0"
 """
 
@@ -162,7 +210,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.9.2"
 manifest_format = "2.0"
-project_hash = "2837f80e4af7f16f75cd2202d033975c51574e20"
+project_hash = "16fd8e53d67477d03ee4f979b10b873a002e870c"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -1206,21 +1254,24 @@ version = "1.4.1+1"
 
 # ╔═╡ Cell order:
 # ╟─cf402b6d-43f4-442c-9aed-6ef2851efb1a
-# ╠═042a13c0-a708-412a-964f-43cec8a1d066
+# ╟─042a13c0-a708-412a-964f-43cec8a1d066
 # ╟─28e9c336-5d0b-485b-b72d-2ea35d7a13dc
 # ╟─c414a607-7925-4921-a5dd-514c5290ebf9
 # ╟─1fccb3f3-1c97-4663-b03b-219a3875aea4
-# ╠═fed5059a-13be-454f-a2a5-7566c330052d
+# ╟─fed5059a-13be-454f-a2a5-7566c330052d
 # ╟─a80d3a63-85c6-4d51-9b6d-0184da030933
 # ╟─07285833-4d5b-4d7c-af98-286f9ac31e9d
 # ╟─f1a5895b-e485-4c83-b912-7e0ce6a54540
 # ╟─8565fd45-146a-449a-8a3f-2c9c3239ef89
 # ╟─32449e0a-8374-4bb6-8135-2d614cd07f1d
 # ╟─46cc9dcd-85a3-4676-92e4-c1ef8df252e0
-# ╠═82abb8e7-6bde-4ac4-bfd5-c26a09fff88b
 # ╟─06cd96d2-7256-11ee-1814-11b4f51fcb33
 # ╟─868961d5-3f10-4b29-9ac7-e4479bdff28c
-# ╟─d01038ec-a149-4f28-8284-9744ada3c702
+# ╠═82abb8e7-6bde-4ac4-bfd5-c26a09fff88b
+# ╠═d01038ec-a149-4f28-8284-9744ada3c702
+# ╟─6e913af5-baf9-407a-a46a-67e114bf2724
+# ╠═6cca9b29-38da-486e-ab06-e2277f2b122f
+# ╟─974c35fe-cbc6-44a4-8cc7-2072b14938f6
 # ╟─f0d6d960-2e9d-4278-8084-824b7ec0427a
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
