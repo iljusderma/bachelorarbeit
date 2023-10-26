@@ -7,7 +7,7 @@ using InteractiveUtils
 # ╔═╡ 042a13c0-a708-412a-964f-43cec8a1d066
 begin
 	using Plots, Statistics, Random, LaTeXStrings, PlotThemes
-	theme(:juno)
+	theme(:lime)
 end
 
 # ╔═╡ cf402b6d-43f4-442c-9aed-6ef2851efb1a
@@ -108,10 +108,10 @@ md" $\longrightarrow$ I think at this point finite scaling is also not helping."
 
 # ╔═╡ 82abb8e7-6bde-4ac4-bfd5-c26a09fff88b
 begin
-	L = 50
-	iterations = 100*1000
+	L = 100
+	iterations = 1000*1000
 	occupied_ratio = 0.5
-	rates = [0.2, 0.7, 1, 0]
+	rates = [0.3, 0.7, 1, 0]
 	flux_steps = 500
 	state = initialState(L, occupied_ratio)
 	println("Initialized variables")
@@ -167,15 +167,18 @@ begin
 	xlabel!("Lattice site "*L"i")
 end
 
+# ╔═╡ 0c57fdf5-b996-476a-a1fc-a5844fc62151
+begin
+	rho = round(mean(densityprofile[1:(L-10)]), digits=4)
+	println("Durchschnittliche Dichte: $rho")
+end
+
 # ╔═╡ 6e913af5-baf9-407a-a46a-67e114bf2724
 begin
 	scatter(1:(iterations - L+1), total_density, label="$rates", title="Time evolution of the density", ms=2, msw=0)
 	ylabel!(L"\langle \rho \rangle")
 	xlabel!("Iterations")
 end
-
-# ╔═╡ 6cca9b29-38da-486e-ab06-e2277f2b122f
-scatter(1:div(iterations,flux_steps), FLUX)
 
 # ╔═╡ 974c35fe-cbc6-44a4-8cc7-2072b14938f6
 begin
@@ -188,6 +191,19 @@ md"### Update Method
 My next try to find the cause for the deviation was changing the update method. Instead of the sublattice update *SLUpdate(...)* I used a random update *RANDUpdate(...)*. \
 The average density per lattice site was here again not as expected. The deviation was even higher.
 "
+
+# ╔═╡ ee1b7e3d-8b29-4b82-bd3b-fe750a2aa3b7
+md"### Expectation of the current
+
+I was very confused about the colormaps for the current because the current in the MC phase really does not fit to the expectation of 1/4. Following I read the paper by Blythe and Evens again and I found: $J = \rho_i (1- \rho_{i+1})$"
+
+# ╔═╡ 8a071e8f-d299-412c-a575-111c82bfa910
+begin
+	rho_i = densityprofile[1:L-1]
+	rho_ii = densityprofile[2:L]
+	J = rho_i .* (1 .- rho_ii)
+	println(mean(J))
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -208,7 +224,7 @@ Plots = "~1.39.0"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.2"
+julia_version = "1.9.3"
 manifest_format = "2.0"
 project_hash = "16fd8e53d67477d03ee4f979b10b873a002e870c"
 
@@ -1254,7 +1270,7 @@ version = "1.4.1+1"
 
 # ╔═╡ Cell order:
 # ╟─cf402b6d-43f4-442c-9aed-6ef2851efb1a
-# ╟─042a13c0-a708-412a-964f-43cec8a1d066
+# ╠═042a13c0-a708-412a-964f-43cec8a1d066
 # ╟─28e9c336-5d0b-485b-b72d-2ea35d7a13dc
 # ╟─c414a607-7925-4921-a5dd-514c5290ebf9
 # ╟─1fccb3f3-1c97-4663-b03b-219a3875aea4
@@ -1268,10 +1284,12 @@ version = "1.4.1+1"
 # ╟─06cd96d2-7256-11ee-1814-11b4f51fcb33
 # ╟─868961d5-3f10-4b29-9ac7-e4479bdff28c
 # ╠═82abb8e7-6bde-4ac4-bfd5-c26a09fff88b
-# ╠═d01038ec-a149-4f28-8284-9744ada3c702
+# ╟─d01038ec-a149-4f28-8284-9744ada3c702
+# ╟─0c57fdf5-b996-476a-a1fc-a5844fc62151
 # ╟─6e913af5-baf9-407a-a46a-67e114bf2724
-# ╠═6cca9b29-38da-486e-ab06-e2277f2b122f
-# ╟─974c35fe-cbc6-44a4-8cc7-2072b14938f6
+# ╠═974c35fe-cbc6-44a4-8cc7-2072b14938f6
 # ╟─f0d6d960-2e9d-4278-8084-824b7ec0427a
+# ╟─ee1b7e3d-8b29-4b82-bd3b-fe750a2aa3b7
+# ╟─8a071e8f-d299-412c-a575-111c82bfa910
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
