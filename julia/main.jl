@@ -70,7 +70,7 @@ function inject(state, alpha)
 end
 
 function SLUpdate(iterations, state, rates, flux_steps)
-	all_states = zeros(Float64, iterations, L)
+	all_states = zeros(Float64, iterations, length(state))
 	FLUX = zeros(div(iterations, flux_steps))
 	hop_counter = 0
 	for i in 1:iterations

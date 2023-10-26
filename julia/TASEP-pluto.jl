@@ -91,7 +91,7 @@ The following code just calculates the mean density per lattice site. Unfortunat
 
 # ╔═╡ f1a5895b-e485-4c83-b912-7e0ce6a54540
 md"##### Exit rate $\beta$
-For constant L, iterations, p and $\alpha$ I varied beta. Like expected for the LD phase beta has no significant impact on the average density.
+For constant L, iterations, p and $\alpha$ I varied beta. Like expected for the LD phase beta has no significant impact on the average density. Similar for $\alpha$ in HD pase.
 "
 
 # ╔═╡ 8565fd45-146a-449a-8a3f-2c9c3239ef89
@@ -106,12 +106,19 @@ The lattice size changes similar to the Noi the slope of the curve but inverse. 
 # ╔═╡ 46cc9dcd-85a3-4676-92e4-c1ef8df252e0
 md" $\longrightarrow$ I think at this point finite scaling is also not helping."
 
+# ╔═╡ 42a8c6a5-c0e0-4297-85b8-986db855036d
+md"##### Hop rate $p$
+If I change the hop rate slightly decrease the hop rate $p$ the curve approaches the predicted value. For expample the configuration ($\alpha, \beta)= (0.3, 0.8)$ a hop rate $p=0.945$ seems to be very good (L=100, iterations=$5 \cdot 10^5$, SLUpdate). 
+
+For the RANDUpdate the opatimal hop rate seems to be p=0.76. So maybe there is a problem with the update algorithm but if I reverse one SL part I dont see any changes.
+"
+
 # ╔═╡ 82abb8e7-6bde-4ac4-bfd5-c26a09fff88b
 begin
 	L = 100
-	iterations = 1000*1000
+	iterations = 100*1000
 	occupied_ratio = 0.5
-	rates = [0.3, 0.7, 1, 0]
+	rates = [0.3, 0.8, 1, 0]
 	flux_steps = 500
 	state = initialState(L, occupied_ratio)
 	println("Initialized variables")
@@ -162,7 +169,7 @@ begin
 	densityprofile = vec(mean(cut_states, dims=1))
 	total_density = mean(cut_states, dims=2)
 	scatter(1:L, densityprofile, label="$rates", title="Mean density per lattice site", ms=2, msw=0)
-	plot!(1:L, zeros(L) .+ 0.3, color="red")
+	plot!(1:L, zeros(L) .+ 0.1, color="red")
 	ylabel!(L"\langle \rho_i \rangle")
 	xlabel!("Lattice site "*L"i")
 end
@@ -1277,15 +1284,16 @@ version = "1.4.1+1"
 # ╟─fed5059a-13be-454f-a2a5-7566c330052d
 # ╟─a80d3a63-85c6-4d51-9b6d-0184da030933
 # ╟─07285833-4d5b-4d7c-af98-286f9ac31e9d
-# ╟─f1a5895b-e485-4c83-b912-7e0ce6a54540
-# ╟─8565fd45-146a-449a-8a3f-2c9c3239ef89
-# ╟─32449e0a-8374-4bb6-8135-2d614cd07f1d
+# ╠═f1a5895b-e485-4c83-b912-7e0ce6a54540
+# ╠═8565fd45-146a-449a-8a3f-2c9c3239ef89
+# ╠═32449e0a-8374-4bb6-8135-2d614cd07f1d
 # ╟─46cc9dcd-85a3-4676-92e4-c1ef8df252e0
+# ╠═42a8c6a5-c0e0-4297-85b8-986db855036d
 # ╟─06cd96d2-7256-11ee-1814-11b4f51fcb33
 # ╟─868961d5-3f10-4b29-9ac7-e4479bdff28c
 # ╠═82abb8e7-6bde-4ac4-bfd5-c26a09fff88b
 # ╟─d01038ec-a149-4f28-8284-9744ada3c702
-# ╟─0c57fdf5-b996-476a-a1fc-a5844fc62151
+# ╠═0c57fdf5-b996-476a-a1fc-a5844fc62151
 # ╟─6e913af5-baf9-407a-a46a-67e114bf2724
 # ╠═974c35fe-cbc6-44a4-8cc7-2072b14938f6
 # ╟─f0d6d960-2e9d-4278-8084-824b7ec0427a
