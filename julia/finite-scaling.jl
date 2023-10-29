@@ -4,27 +4,27 @@ using CSV, Tables
 
 function fs_iterations(L, occupied_ratio, gridsize, flux_steps, rates)
     DENSITY = zeros(gridsize)
-    ITERATIONS = range(1000, step=10*1000, length=gridsize)
+    T = range(1000, step=10*1000, length=gridsize)
     @time begin
-    for (index, iterations) in enumerate(ITERATIONS)
+    for (index, t) in enumerate(T)
         if (index)%10 == 0
             println(round(index/gridsize*100, digits=2), "%")
         end
         # perform single simulation
         state = initialState(L, occupied_ratio)
-        all_states, FLUX = SLUpdate(iterations, state, rates, flux_steps)
+        all_states, FLUX = SLUpdate(t, state, rates, flux_steps)
         # determine densityprofile
-        cut_states = all_states[L:iterations, :]
-        densityprofile = vec(mean(cut_states, dims=1))
+        cut_states = all_states[:, L:t]
+        densityprofile = vec(mean(cut_states, dims=2))
         # determine average density
         DENSITY[index] = mean(densityprofile[1:(L-10)])
         CSV.write("fs-iterations-"*string(gridsize)*".csv",  Tables.table(DENSITY), writeheader=false)
     end
     end
-    scatter(1 ./ ITERATIONS, DENSITY)
+    scatter(1 ./ T, DENSITY)
 end
 
-function fs_L(iterations, occupied_ratio, gridsize, flux_steps, rates)
+function fs_L(t, occupied_ratio, gridsize, flux_steps, rates)
     DENSITY = zeros(gridsize)
     L_array = range(100, step=100, length=gridsize)
     for (index, L) in enumerate(L_array)
@@ -33,10 +33,10 @@ function fs_L(iterations, occupied_ratio, gridsize, flux_steps, rates)
         end
         # perform single simulation
         state = initialState(L, occupied_ratio)
-        all_states, FLUX = SLUpdate(iterations, state, rates, flux_steps)
+        all_states, FLUX = SLUpdate(t, state, rates, flux_steps)
         # determine densityprofile
-        cut_states = all_states[L:iterations, :]
-        densityprofile = vec(mean(cut_states, dims=1))
+        cut_states = all_states[:, L:t]
+        densityprofile = vec(mean(cut_states, dims=2))
         # determine average density
         DENSITY[index] = mean(densityprofile[1:(L-10)])
         CSV.write("fs-L-"*string(gridsize)*".csv",  Tables.table(DENSITY), writeheader=false)

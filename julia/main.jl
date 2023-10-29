@@ -69,15 +69,15 @@ function inject(state, alpha)
     end
 end
 
-function SLUpdate(iterations, state, rates, flux_steps)
-	all_states = zeros(Float64, iterations, length(state))
-	FLUX = zeros(div(iterations, flux_steps))
+function SLUpdate(t, state, rates, flux_steps)
+	all_states = zeros(Float64, length(state), t)
+	FLUX = zeros(div(t, flux_steps))
 	hop_counter = 0
-	for i in 1:iterations
+	for i in 1:t
 		eject(state, rates[2])
 		state, hop_counter = SLhop(state, rates[3], i, hop_counter)
 		inject(state, rates[1])
-		all_states[i, :] = state
+		all_states[:, i] = state
 		if i%flux_steps == 0
 			FLUX[div(i, flux_steps)] = hop_counter/flux_steps
 			hop_counter = 0
@@ -86,15 +86,15 @@ function SLUpdate(iterations, state, rates, flux_steps)
 	return all_states, FLUX
 end
 
-function RANDUpdate(iterations, state, rates, flux_steps)
-	all_states = zeros(Float64, iterations, L)
-	FLUX = zeros(div(iterations, flux_steps))
+function RANDUpdate(t, state, rates, flux_steps)
+	all_states = zeros(Float64, length(state), t)
+	FLUX = zeros(div(t, flux_steps))
 	hop_counter = 0
-	for i in 1:iterations
+	for i in 1:t
 		eject(state, rates[2])
 		state, hop_counter = RANDhop(state, rates[3], i, hop_counter)
 		inject(state, rates[1])
-		all_states[i, :] = state
+		all_states[:, i] = state
 		if i%flux_steps == 0
 			FLUX[div(i, flux_steps)] = hop_counter/flux_steps
 			hop_counter = 0

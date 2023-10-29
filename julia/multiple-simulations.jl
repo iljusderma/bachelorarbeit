@@ -1,8 +1,11 @@
 include("main.jl")
 using CSV, Tables
 
-function iterate_fakeflux(FLUX_Matrix, gridsize, rates, ALPHA, BETA, flux_steps, iterations, L, occupied_ratio)
+function iterate_fakeflux(rates, flux_steps, t, L, occupied_ratio)
     # counts the number of hops at a site and devide by iterations
+    gridsize = 200
+    FLUX_Matrix = zeros(Float64, gridsize, gridsize)
+    ALPHA, BETA = range(0, 1, gridsize), range(0, 1, gridsize)
     @time begin
     for (index, flux) in enumerate(FLUX_Matrix)
         if flux == 0
@@ -13,7 +16,7 @@ function iterate_fakeflux(FLUX_Matrix, gridsize, rates, ALPHA, BETA, flux_steps,
             a, b = (index - 1)%gridsize + 1, div(index-1, gridsize) + 1
             rates[1], rates[2] = ALPHA[a], BETA[b]
             state = initialState(L, occupied_ratio)
-            all_states, FLUX = RANDUpdate(iterations, state, rates, flux_steps)
+            all_states, FLUX = RANDUpdate(t, state, rates, flux_steps)
             popfirst!(FLUX)
             FLUX_Matrix[index] = mean(FLUX)
             CSV.write("flux-"*string(gridsize)*".csv",  Tables.table(FLUX_Matrix), writeheader=false)
@@ -23,7 +26,10 @@ function iterate_fakeflux(FLUX_Matrix, gridsize, rates, ALPHA, BETA, flux_steps,
     return FLUX_Matrix
 end
 
-function iterate_current(CURRENT, gridsize, rates, ALPHA, BETA, flux_steps, iterations, L, occupied_ratio)
+function iterate_current(CURRENT, rates, flux_steps, t, L, occupied_ratio)
+    gridsize = 200
+    FLUX_Matrix = zeros(Float64, gridsize, gridsize)
+    ALPHA, BETA = range(0, 1, gridsize), range(0, 1, gridsize)
     @time begin
     for (index, flux) in enumerate(FLUX_Matrix)
         if flux == 0
@@ -36,9 +42,9 @@ function iterate_current(CURRENT, gridsize, rates, ALPHA, BETA, flux_steps, iter
             rates[1], rates[2] = ALPHA[a], BETA[b]
             # perform single simulation
             state = initialState(L, occupied_ratio)
-            all_states, FLUX = SLUpdate(iterations, state, rates, flux_steps)
+            all_states, FLUX = SLUpdate(t, state, rates, flux_steps)
             # determine J = rho_i(1-rho_ii)
-            cut_states = all_states[L:iterations, :]
+            cut_states = all_states[L:t, :]
             densityprofile = vec(mean(cut_states, dims=1))
             rho_i = densityprofile[1:L-1] # density at site i
             rho_ii = densityprofile[2:L]  # density at site i + 1
@@ -51,19 +57,24 @@ function iterate_current(CURRENT, gridsize, rates, ALPHA, BETA, flux_steps, iter
     return CURRENT
 end
 
-L = 500
-iterations = 5*1000
+L = 100
+t = 5*1000
 occupied_ratio = 0.5
-gridsize = 200
 flux_steps = 50
 rates = [0.6, 0.3, 1, 0]
-FLUX_Matrix = zeros(Float64, gridsize, gridsize)
-ALPHA, BETA = range(0, 1, gridsize), range(0, 1, gridsize)
 
-# first intention
-# FLUX_Matrix = iterate_fakeflux(FLUX_Matrix, gridsize, rates, ALPHA, BETA, flux_steps, iterations, L, occupied_ratio)
+function mean_density(L, occupied_ratio, flux_steps, rates, t)
+    nos = 100 # Nos: number of simulations
+    @time begin
+    TOTAL_DENSITY = zeros(Float64, t, nos)
+    for (i, density) in enumerate(eachcol(TOTAL_DENSITY))
+        state = initialState(L, occupied_ratio)
+        all_states, CURRENT = SLUpdate(t, state, rates, flux_steps)
+        TOTAL_DENSITY[:, i] = mean(all_states, dims=2)
+    end
+    total_density = vec(mean(TOTAL_DENSITY, dims=1))
+    # scatter(1:t, total_density, legend=false, ms=1, title="nos = $nos")
+    end
+end
 
-# calculated by Blythe and Evans
-FLUX_Matrix =  iterate_current(FLUX_Matrix, gridsize, rates, ALPHA, BETA, flux_steps, iterations, L, occupied_ratio)
-display(FLUX_Matrix)
-heatmap(FLUX_Matrix)
+mean_density(L, occupied_ratio, flux_steps, rates, t)
