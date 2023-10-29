@@ -82,16 +82,11 @@ gr()
 total_density, p = mean_density(L, occupied_ratio, flux_steps, rates, t)
 
 @. model(x, p) = p[1]*exp(p[2]*(x-p[3])) + p[4]
-xdata = 1.0:t
-ydata = total_density
-p0 = [1.0,1.0,1.0,1.0]
-
-# Überprüfe und bereinige die Daten
-inds = .!isnan.(ydata) .& .!isinf.(ydata)  # Indizes ohne NaN oder Inf
-xdata_clean = xdata[inds]
-ydata_clean = ydata[inds]
+xdata = 1.0:100.0
+ydata = range(0, 1, length=100)
+p0 = [0.5, 0.5, 0.5, 0.5]
 
 fit = curve_fit(model, xdata, ydata, p0)
-params = coef(fit)
+params = fit.param
 display(p)
 plot!(xdata, model(xdata, params))
