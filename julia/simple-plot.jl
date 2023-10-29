@@ -12,9 +12,10 @@ state = initialState(L, occupied_ratio)
 
 all_states, FLUX = SLUpdate(t, state, rates, flux_steps)
 # cut data to exclude beginning phase (levelling) which is approx L
+println(size(all_states))
 cut_states = all_states[:, L:t]
 densityprofile = vec(mean(cut_states, dims=2))
-total_density = mean(cut_states, dims=1)
+total_density = vec(mean(cut_states, dims=1))
 
 # plot data
 gr()

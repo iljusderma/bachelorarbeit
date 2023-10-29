@@ -1,5 +1,6 @@
 include("main.jl")
 using CSV, Tables
+using LsqFit
 
 function iterate_fakeflux(rates, flux_steps, t, L, occupied_ratio)
     # counts the number of hops at a site and devide by iterations
@@ -57,24 +58,40 @@ function iterate_current(CURRENT, rates, flux_steps, t, L, occupied_ratio)
     return CURRENT
 end
 
-L = 100
-t = 5*1000
-occupied_ratio = 0.5
-flux_steps = 50
-rates = [0.6, 0.3, 1, 0]
-
 function mean_density(L, occupied_ratio, flux_steps, rates, t)
     nos = 100 # Nos: number of simulations
     @time begin
     TOTAL_DENSITY = zeros(Float64, t, nos)
-    for (i, density) in enumerate(eachcol(TOTAL_DENSITY))
+    for i in 1:nos
         state = initialState(L, occupied_ratio)
         all_states, CURRENT = SLUpdate(t, state, rates, flux_steps)
-        TOTAL_DENSITY[:, i] = mean(all_states, dims=2)
+        TOTAL_DENSITY[:, i] = vec(mean(all_states, dims=1))
     end
-    total_density = vec(mean(TOTAL_DENSITY, dims=1))
-    # scatter(1:t, total_density, legend=false, ms=1, title="nos = $nos")
+    total_density = vec(mean(TOTAL_DENSITY, dims=2))
     end
+    p = scatter(total_density, legend=false, ms=0.1, title="nos = $nos")
+    return total_density, p
 end
 
-mean_density(L, occupied_ratio, flux_steps, rates, t)
+L = 500
+t = 10*1000
+occupied_ratio = 0.5
+flux_steps = 50
+rates = [0.6, 0.3, 0.9, 0]
+gr()
+total_density, p = mean_density(L, occupied_ratio, flux_steps, rates, t)
+
+@. model(x, p) = p[1]*exp(p[2]*(x-p[3])) + p[4]
+xdata = 1.0:t
+ydata = total_density
+p0 = [1.0,1.0,1.0,1.0]
+
+# Überprüfe und bereinige die Daten
+inds = .!isnan.(ydata) .& .!isinf.(ydata)  # Indizes ohne NaN oder Inf
+xdata_clean = xdata[inds]
+ydata_clean = ydata[inds]
+
+fit = curve_fit(model, xdata, ydata, p0)
+params = coef(fit)
+display(p)
+plot!(xdata, model(xdata, params))

@@ -1,4 +1,4 @@
-using Plots, Statistics, Random, LaTeXStrings
+using Statistics, Random, LaTeXStrings, Plots
 using PlotThemes
 theme(:juno)
 
