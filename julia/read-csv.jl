@@ -47,7 +47,7 @@ function calc_current(alpha, beta)
         return current
 end
 
-function plot_current(path)
+function plot_current_map(path)
         FLUX = CSV.read(path, Tables.matrix, header=0)
         gridsize = 200
         ALPHA, BETA = range(0, 1, gridsize), range(0, 1, gridsize)
@@ -56,6 +56,20 @@ function plot_current(path)
                 xlabel=L"Exit rate $\beta$", 
                 ylabel=L"Entry rate $\alpha$")
         #contour!(ALPHA, BETA, Z, levels=[0.05, 0.1, 0.15, 0.2, 0.25], color=:solar, lw=2)
+end
+
+function plot_current_line(path)
+        FLUX = CSV.read(path, Tables.matrix, header=0)
+        gridsize = 200
+        index = 51              # alpha fest, beta variabel
+        CURRENT_line = FLUX[:, index]
+        ALPHA, BETA = range(0, 1, gridsize), range(0, 1, gridsize)
+        alpha = round(ALPHA[index], digits=2)
+        scatter(BETA, CURRENT_line, title="Current for alpha = $alpha", 
+                xlabel=L"Exit rate $\beta$", 
+                ylabel=L"Current $J$", ms=1,
+                legend=false)
+        plot!()
 end
 
 function plot_fs_iterations(path)
@@ -78,4 +92,4 @@ function plot_fs_density()
                         label="density for L ⟶ ∞")
 end
 
-plot_current("/home/ilja/Documents/coding/bachelorarbeit/current-200.csv")
+plot_current_line("/home/ilja/Documents/coding/bachelorarbeit/current-200.csv")

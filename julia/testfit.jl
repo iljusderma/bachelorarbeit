@@ -1,8 +1,3 @@
-@. model(x, p) = p[1]*exp(p[2]*(x-p[3])) + p[4]
-t = 100.0
-xdata = 1.0:t
-ydata = range(0, 1, length=trunc(Int, t))
-p0 = [0.5, 0.5, 0.5, 0.5]
-
-fit = curve_fit(model, xdata, ydata, p0)
-params = fit.param
+p = [0.95, 0.9, 0.85, 0.8, 0.75]
+b = [84, 50.7, 31.3, 19.1, 16.5]
+scatter(p, b, title="b(p)-diagram", legend=false, xlabel="hop rate p", ylabel="Fit parameter b")

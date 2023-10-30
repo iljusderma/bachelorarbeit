@@ -1,5 +1,5 @@
 include("main.jl")
-using CSV, Tables
+using CSV, Tables, LaTeXStrings
 using LsqFit
 
 function iterate_fakeflux(rates, flux_steps, t, L, occupied_ratio)
@@ -59,7 +59,7 @@ function iterate_current(CURRENT, rates, flux_steps, t, L, occupied_ratio)
 end
 
 function mean_density(L, occupied_ratio, flux_steps, rates, t)
-    nos = 100 # Nos: number of simulations
+    nos = 500 # Nos: number of simulations
     @time begin
     TOTAL_DENSITY = zeros(Float64, t, nos)
     for i in 1:nos
@@ -69,24 +69,24 @@ function mean_density(L, occupied_ratio, flux_steps, rates, t)
     end
     total_density = vec(mean(TOTAL_DENSITY, dims=2))
     end
-    p = scatter(total_density, legend=false, ms=0.1, title="nos = $nos")
-    return total_density, p
+    # exponential fit
+    # @. model(x, p) = p[1]*exp(-p[2]*(x-p[3])) + p[4] -> p[3] ist fast null 
+    @. model(x, p) = p[1]*exp(-p[2]*rates[3]^2*x) + p[3]
+    xdata = (1:t) ./ t
+    ydata = total_density
+    p0 = [0.2, 11.4, 0.65]
+    fit = curve_fit(model, xdata, ydata, p0)
+    params = fit.param
+    println(params[2])
+    # plot data
+    scatter((1:t) ./ t, total_density, label="Calculated density evolution", 
+            ms=0.1, title="Mean over $nos simulations, $rates")
+    # plot fit
+    plot!(xdata, model(xdata, params), label=L"Fit with $ae^{-bt}+c$")
 end
 
-L = 500
-t = 10*1000
+L = 200
+t = 20*1000
 occupied_ratio = 0.5
 flux_steps = 50
-rates = [0.6, 0.3, 0.9, 0]
-gr()
-total_density, p = mean_density(L, occupied_ratio, flux_steps, rates, t)
-
-@. model(x, p) = p[1]*exp(p[2]*(x-p[3])) + p[4]
-xdata = 1.0:100.0
-ydata = range(0, 1, length=100)
-p0 = [0.5, 0.5, 0.5, 0.5]
-
-fit = curve_fit(model, xdata, ydata, p0)
-params = fit.param
-display(p)
-plot!(xdata, model(xdata, params))
+rates = [0.6, 0.3, 0.8, 0]
