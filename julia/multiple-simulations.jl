@@ -78,15 +78,41 @@ function mean_density(L, occupied_ratio, flux_steps, rates, t)
     fit = curve_fit(model, xdata, ydata, p0)
     params = fit.param
     println(params[2])
+    # determine approached density
+    interval = floor(Int, 0.35*t)# define interval
+    mean_total_density = mean(total_density[interval:end])
+    println("Approach to density = $mean_total_density")
+    # uncertainty of the approach
+    error = std(TOTAL_DENSITY[interval:end, :])
+    println("with error = $error")
+    plotlyjs()
     # plot data
     scatter((1:t) ./ t, total_density, label="Calculated density evolution", 
-            ms=0.1, title="Mean over $nos simulations, $rates")
+            ms=0.1, title="Mean over $nos simulations, $rates", 
+            legend = :outertopright)
     # plot fit
     plot!(xdata, model(xdata, params), label=L"Fit with $ae^{-bt}+c$")
+end
+
+function small_plot()
+    # taken by hand with mean_density
+    p = [1, 0.95, 0.9, 0.85, 0.8, 0.75]
+    density = [0.7453, 0.7051, 0.6609, 0.6124, 0.5592, 0.5247]
+    density_err = [0.0252, 0.0272, 0.0294, 0.0310, 0.0307, 0.0277]
+    gr()
+    scatter(p, density, yerr=density_err, legend=:bottomright, 
+        label="Calculated mean density with errorbars", 
+        title=L"$\overline{\rho}(p)$-diagram", 
+        xlabel="Hop rate p", 
+        ylabel=L"Mean density $\overline{\rho}$")
+    plot!(p, zeros(6) .+ 0.7, ls=:dash, 
+        label="Expected density value")
 end
 
 L = 200
 t = 20*1000
 occupied_ratio = 0.5
 flux_steps = 50
-rates = [0.6, 0.3, 0.8, 0]
+rates = [0.6, 0.3, 0.75, 0]
+# mean_density(L, occupied_ratio, flux_steps, rates, t)
+small_plot()
