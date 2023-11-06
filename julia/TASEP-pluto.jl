@@ -16,7 +16,7 @@ md"# TASEP-Model"
 # ╔═╡ 28e9c336-5d0b-485b-b72d-2ea35d7a13dc
 function initialState(L::Int64, ratio::Float64)
     state = zeros(L)
-    state[1:convert(Int64, ratio*L)] .= + 1
+    state[1:Int(ratio*L)] .= + 1
     return shuffle(state)
 end
 
@@ -116,10 +116,13 @@ For the RANDUpdate the opatimal hop rate seems to be p=0.76. So maybe there is a
 # ╔═╡ 82abb8e7-6bde-4ac4-bfd5-c26a09fff88b
 begin
 	L = 100
-	iterations = 100*1000
+	iterations = 100*1000 # comparable with time
+	# ratio of ones in the initialized state
 	occupied_ratio = 0.5
-	rates = [0.3, 0.8, 1, 0]
+	# probabilities alpha, beta, p, q
+	rates = [0.7, 0.3, 1, 0]
 	flux_steps = 500
+	# initialize state 1xL matrix
 	state = initialState(L, occupied_ratio)
 	println("Initialized variables")
 end
@@ -143,7 +146,8 @@ function SLUpdate(iterations, state, rates, flux_steps)
 end
 
 # ╔═╡ 868961d5-3f10-4b29-9ac7-e4479bdff28c
-function RANDUpdate(iterations, state, rates, flux_steps)
+function RANDUpdate(iterations, rates, flux_steps)
+	# generate a matrix L x iterations
 	all_states = zeros(Float64, iterations, L)
 	FLUX = zeros(div(iterations, flux_steps))
 	hop_counter = 0
@@ -162,7 +166,7 @@ end
 
 # ╔═╡ d01038ec-a149-4f28-8284-9744ada3c702
 begin
-	all_states, FLUX = SLUpdate(iterations, state, rates, flux_steps)
+	all_states, FLUX = RANDUpdate(iterations, state, rates, flux_steps)
 	popfirst!(FLUX) # delete first element bc bad measurement
 	# cut data to exclude beginning phase (levelling) which is approx L
 	cut_states = all_states[L:iterations, :]
@@ -1278,23 +1282,23 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╟─cf402b6d-43f4-442c-9aed-6ef2851efb1a
 # ╠═042a13c0-a708-412a-964f-43cec8a1d066
-# ╟─28e9c336-5d0b-485b-b72d-2ea35d7a13dc
+# ╠═28e9c336-5d0b-485b-b72d-2ea35d7a13dc
 # ╟─c414a607-7925-4921-a5dd-514c5290ebf9
 # ╟─1fccb3f3-1c97-4663-b03b-219a3875aea4
-# ╟─fed5059a-13be-454f-a2a5-7566c330052d
+# ╠═fed5059a-13be-454f-a2a5-7566c330052d
 # ╟─a80d3a63-85c6-4d51-9b6d-0184da030933
 # ╟─07285833-4d5b-4d7c-af98-286f9ac31e9d
-# ╠═f1a5895b-e485-4c83-b912-7e0ce6a54540
-# ╠═8565fd45-146a-449a-8a3f-2c9c3239ef89
-# ╠═32449e0a-8374-4bb6-8135-2d614cd07f1d
+# ╟─f1a5895b-e485-4c83-b912-7e0ce6a54540
+# ╟─8565fd45-146a-449a-8a3f-2c9c3239ef89
+# ╟─32449e0a-8374-4bb6-8135-2d614cd07f1d
 # ╟─46cc9dcd-85a3-4676-92e4-c1ef8df252e0
-# ╠═42a8c6a5-c0e0-4297-85b8-986db855036d
+# ╟─42a8c6a5-c0e0-4297-85b8-986db855036d
 # ╟─06cd96d2-7256-11ee-1814-11b4f51fcb33
-# ╟─868961d5-3f10-4b29-9ac7-e4479bdff28c
+# ╠═868961d5-3f10-4b29-9ac7-e4479bdff28c
 # ╠═82abb8e7-6bde-4ac4-bfd5-c26a09fff88b
-# ╟─d01038ec-a149-4f28-8284-9744ada3c702
+# ╠═d01038ec-a149-4f28-8284-9744ada3c702
 # ╠═0c57fdf5-b996-476a-a1fc-a5844fc62151
-# ╟─6e913af5-baf9-407a-a46a-67e114bf2724
+# ╠═6e913af5-baf9-407a-a46a-67e114bf2724
 # ╠═974c35fe-cbc6-44a4-8cc7-2072b14938f6
 # ╟─f0d6d960-2e9d-4278-8084-824b7ec0427a
 # ╟─ee1b7e3d-8b29-4b82-bd3b-fe750a2aa3b7
