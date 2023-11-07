@@ -30,14 +30,14 @@ function dynamic_plot(all_states)
     end every 1
 end
 
-L = 300
-t = 2*1000
+L = 200
+t = 10_1000
 occupied_ratio = 0.5
-rates = [0.3, 0.3, 0.75, 0]
+rates = [0.3, 0.7, 1, 0]
 flux_steps = 500
 state = initialState(L, occupied_ratio)
 
-all_states, FLUX = RANDUpdate(t, state, rates, flux_steps)
+all_states, FLUX = SLUpdate(t, state, rates, flux_steps)
 # cut data to exclude beginning phase (levelling) which is approx L
 println(size(all_states))
 cut_states = all_states[:, L:t]
@@ -45,5 +45,5 @@ densityprofile = vec(mean(cut_states, dims=2))
 total_density = vec(mean(cut_states, dims=1))
 
 # plot data
-# plot_densityprofile(densityprofile, L, t, total_density)
-state_map(all_states)
+plot_densityprofile(densityprofile, L, t, total_density)
+#state_map(all_states)

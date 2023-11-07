@@ -1,4 +1,4 @@
-using Random, Plots, Statistics, PlotThemes, LaTeXStrings
+using Random, Plots, Statistics, PlotThemes, LaTeXStrings, ProfileView
 theme(:lime)
 
 function initialize_state()
@@ -44,7 +44,6 @@ function simulate()
     hop_counter = 0
     #CURRENT_SNAPS = zeros(t0)
     # perform L*t0 update steps
-	println(α)
     for t in 1:(t0*L)
         state, hop_counter = update(state, hop_counter)
         # save snapshot
@@ -55,6 +54,36 @@ function simulate()
         else
             snapshot[:, t%L] = state 
         end
+        # count hops
+
     end
     return STATES, hop_counter/10_000
 end
+# initialize lattice parameters
+# lattice size L, injection rate α, ejection rate β, hop rate p
+t0 = 10_000 # one time unit includes L updates of the lattice
+L = 200
+α = 0.25
+β = 0.75
+p = 1
+
+# perform update
+@time begin
+@profview
+    STATES, curr = simulate()
+end
+
+# plot data
+gr()
+cut_STATES = STATES[:, 2500:t0]
+densityprofile = vec(mean(cut_STATES, dims=2))
+totaldensity = vec(mean(STATES, dims=1))
+println(curr)
+scatter(densityprofile, ms=1, 
+    label="α=$α, β=$β, p=$p", 
+    ylims=[0, 1], 
+    title="Density profile",
+    ylabel=L"\langle \rho \rangle", 
+    xlabel="Lattice site i")
+# hline!([0.8], label="Expected density")
+# plot!(zeros(t0) .+ 0.3)
