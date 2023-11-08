@@ -1,10 +1,10 @@
-using Random, Plots, Statistics, PlotThemes, LaTeXStrings
+using Random, Plots, Statistics, PlotThemes, LaTeXStrings, ProfileView
 theme(:lime)
 
 function initialize_state(L)
     # initialize state
     state = zeros(L)
-    state[1:Int(floor(L*0.4))] .= 1
+    state[1:Int(floor(L*0.5))] .= 1
     return shuffle(state)
 end
 
