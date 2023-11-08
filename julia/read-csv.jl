@@ -35,13 +35,11 @@ end
 function calc_current(alpha, beta)
         # contourlines
         current = 0
-        if alpha < beta && alpha < 0.5
+        if alpha <= beta && alpha < 0.5
                 current = alpha*(1 - alpha)
-        end
-        if beta < alpha && beta < 0.5
+        elseif beta < alpha && beta < 0.5
                 current = beta*(1 - beta)
-        end
-        if alpha > 0.5 && beta > 0.5
+        elseif alpha > 0.5 && beta > 0.5
                 current = 0.25
         end
         return current
@@ -49,13 +47,13 @@ end
 
 function plot_current_map(path)
         FLUX = CSV.read(path, Tables.matrix, header=0)
-        gridsize = 200
+        gridsize = size(FLUX)[1]
         ALPHA, BETA = range(0, 1, gridsize), range(0, 1, gridsize)
         Z = @. calc_current(ALPHA, BETA')
         heatmap(ALPHA, BETA, FLUX, title= L"Current $J$", 
                 xlabel=L"Exit rate $\beta$", 
                 ylabel=L"Entry rate $\alpha$")
-        #contour!(ALPHA, BETA, Z, levels=[0.05, 0.1, 0.15, 0.2, 0.25], color=:solar, lw=2)
+        contour!(ALPHA, BETA, Z, levels=[0.05, 0.1, 0.15, 0.2, 0.25], color=:darkrainbow, lw=3)
 end
 
 function plot_current_line(path)
@@ -92,4 +90,4 @@ function plot_fs_density()
                         label="density for L ⟶ ∞")
 end
 
-plot_current_line("/home/ilja/Documents/coding/bachelorarbeit/current-200.csv")
+plot_current_map("/home/ilja/bachelorarbeit/current-200.csv")

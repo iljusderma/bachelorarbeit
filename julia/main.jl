@@ -1,14 +1,14 @@
 using Random, Plots, Statistics, PlotThemes, LaTeXStrings
 theme(:lime)
 
-function initialize_state()
+function initialize_state(L)
     # initialize state
     state = zeros(L)
     state[1:Int(floor(L*0.4))] .= 1
     return shuffle(state)
 end
 
-function update(state, hop_counter)
+function update(state, hop_counter, α, β, p)
     L = length(state)
     site = rand(0:L)
     if site == 0
@@ -34,24 +34,20 @@ function update(state, hop_counter)
     return state, hop_counter
 end
 
-function simulate()
+function simulate(α, β, L, t0, p=1)
     # initialize state
-    state = initialize_state()
+    state = initialize_state(L)
     # save state history in all_states every L-th time step
     STATES = zeros(L, t0)
     snapshot = zeros(L, L)
     # insert Current measurement
     hop_counter = 0
-    #CURRENT_SNAPS = zeros(t0)
     # perform L*t0 update steps
-	println(α)
     for t in 1:(t0*L)
-        state, hop_counter = update(state, hop_counter)
+        state, hop_counter = update(state, hop_counter, α, β, p)
         # save snapshot
         if t%L == 0
             STATES[:, div(t, L)] = vec(mean(snapshot, dims=2))
-            #CURRENT_SNAPS[div(t, L)] = hop_counter/L
-            #hop_counter = 0
         else
             snapshot[:, t%L] = state 
         end

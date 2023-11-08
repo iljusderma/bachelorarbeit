@@ -3,7 +3,7 @@ using CSV, Tables, LsqFit
 
 function determine_current_map()
     # counts the number of hops at a site and devide by iterations
-    gridsize = 5
+    gridsize = 200
     CURRENT = zeros(gridsize, gridsize)
     ALPHA, BETA = range(0, 1, gridsize), range(0, 1, gridsize)
     for i in 1:length(CURRENT)
@@ -14,15 +14,12 @@ function determine_current_map()
         # index to row x column
         a, b = (i - 1)%gridsize + 1, div(i-1, gridsize) + 1
         α, β = ALPHA[a], BETA[b]
-        STATES, CURRENT[i] = simulate()
+        STATES, CURRENT[i] = simulate(α, β, L, t0)
         CSV.write("current-"*string(gridsize)*".csv",  Tables.table(CURRENT), writeheader=false)
     end
 end
 
 t0 = 10_000 # one time unit includes L updates of the lattice
 L = 200
-α = 0.3
-β = 0.3
-p = 1
 
 determine_current_map()
