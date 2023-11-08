@@ -3,7 +3,7 @@ theme(:lime)
 
 # initialize lattice parameters
 # lattice size L, injection rate α, ejection rate β, hop rate p
-t0 = 10_000 # one time unit includes L updates of the lattice
+t0 = 2_000 # one time unit includes L updates of the lattice
 L = 300
 α = 0.3
 β = 0.3
@@ -27,4 +27,4 @@ scatter(densityprofile, ms=1,
 hline!([0.7], label="Expected density in HD phase")
 hline!([0.3], label="Expected density in LD phase")=#
 
-heatmap(STATES')
+heatmap(STATES', ylabel="Time t", xlabel="Lattice site i")
