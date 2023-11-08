@@ -3,31 +3,9 @@ theme(:lime)
 
 function expected_current()
         gridsize = 200
-        rates = [0.6, 0.3, 1, 0]
-        FLUX_Matrix = zeros(Float64, gridsize, gridsize)
         ALPHA, BETA = range(0, 1, gridsize), range(0, 1, gridsize)
-
-        for (index, flux) in enumerate(FLUX_Matrix)
-        if flux == 0
-                if (index)%10 == 0
-                println(round(index/gridsize^2*100), "%")
-                end
-                # index to row x column
-                a, b = (index - 1)%gridsize + 1, div(index-1, gridsize) + 1
-                rates[1], rates[2] = ALPHA[a], BETA[b]
-                if rates[1]<rates[2] && rates[1] < 0.5
-                FLUX_Matrix[index] = rates[1]*(1-rates[1])
-                end
-                if rates[2]<rates[1] && rates[2] < 0.5
-                FLUX_Matrix[index] = rates[2]*(1-rates[2])
-                end
-                if rates[1]>0.5 && rates[2]>0.5
-                FLUX_Matrix[index] = 0.25
-                end
-        end
-        end
-        display(FLUX_Matrix)
-        heatmap(ALPHA, BETA, FLUX_Matrix, title= L"Current $J$", 
+        EXPECTED_CURRENT = @. calc_current(ALPHA, BETA')
+        heatmap(ALPHA, BETA, EXPECTED_CURRENT, title= L"Current $J$", 
         xlabel=L"Exit rate $\beta$", 
         ylabel=L"Entry rate $\alpha$")
 end
@@ -57,17 +35,16 @@ function plot_current_map(path)
 end
 
 function plot_current_line(path)
-        FLUX = CSV.read(path, Tables.matrix, header=0)
+        CURRENT = CSV.read(path, Tables.matrix, header=0)
         gridsize = 200
         index = 51              # alpha fest, beta variabel
-        CURRENT_line = FLUX[:, index]
+        CURRENT_line = CURRENT[:, index]
         ALPHA, BETA = range(0, 1, gridsize), range(0, 1, gridsize)
         alpha = round(ALPHA[index], digits=2)
         scatter(BETA, CURRENT_line, title="Current for alpha = $alpha", 
                 xlabel=L"Exit rate $\beta$", 
                 ylabel=L"Current $J$", ms=1,
                 legend=false)
-        plot!()
 end
 
 function plot_fs_iterations(path)
