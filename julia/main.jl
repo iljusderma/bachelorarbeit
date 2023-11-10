@@ -4,7 +4,7 @@ theme(:lime)
 function initialize_state(L)
     # initialize state
     state = zeros(L)
-    state[1:Int(floor(L*0.5))] .= 1
+    state[1:Int(floor(L*0.7))] .= 1
     return shuffle(state)
 end
 
@@ -69,17 +69,17 @@ end
 function simulate(α, β, L, t0, p1=1, p2=0.8)
     # initialize state
     state = initialize_state(L)
-    # save state history in all_states every L-th time step
-    STATES = zeros(L, t0)
-    snapshot = zeros(L, L)
+    # save state history in all_states every n-th time step
+    n = 10*L
+    STATES = zeros(L, Int((t0*L)/n))
     # insert Current measurement
     hop_counter = 0
     # perform L*t0 update steps
     for t in 1:(t0*L)
         state, hop_counter = pole_update(state, hop_counter, α, β, p1, p2)
         # save snapshot
-        if t%L == 0
-            STATES[:, div(t, L)] = state
+        if t%n == 0
+            STATES[:, div(t, n)] = state
         end
     end
     return STATES, hop_counter/10_000
