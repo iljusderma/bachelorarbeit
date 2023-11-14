@@ -2,7 +2,6 @@ include("main.jl")
 using CSV, Tables, LsqFit
 
 function determine_current_map()
-    # counts the number of hops at a site and devide by iterations
     gridsize = 200
     CURRENT = zeros(gridsize, gridsize)
     ALPHA, BETA = range(0, 1, gridsize), range(0, 1, gridsize)
@@ -17,6 +16,26 @@ function determine_current_map()
         STATES, CURRENT[i] = simulate(α, β, L, t0)
         CSV.write("current-"*string(gridsize)*".csv",  Tables.table(CURRENT), writeheader=false)
     end
+end
+
+function alpha_rho_diagram()
+    gridsize = 100
+    RHO = zeros(gridsize)
+    ALPHA = range(0.2, 0.4, gridsize)
+    BETA = .- ALPHA .+ 0.6  # apply shock at alpha = beta = 0.3
+    for i in 1:gridsize
+        if (i)%10 == 0
+            println(round(i/gridsize^2*100), "%")
+        end
+        # index to row x column
+        α = ALPHA[i]
+        β = BETA[i]
+        STATES, curr = simulate(α, β, L, t0)
+        cut_STATES = STATES[:, 250:end]
+        RHO[i] = mean(cut_STATES)
+    end
+    scatter(ALPHA .- BETA, RHO)
+    #CSV.write("alpha-rho-"*string(gridsize)*".csv",  Tables.table(RHO), writeheader=false)
 end
 
 function mean_density(α, β, L, t0, p)
@@ -78,4 +97,5 @@ L = 200
 
 # mean_density(0.3, 0.6, L, t0, 1) # (α, β, L, t0, p)
 # determine_current_map()
-small_plot()
+# small_plot()
+alpha_rho_diagram()

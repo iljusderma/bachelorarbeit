@@ -46,6 +46,18 @@ function plot_current_line(path)
                 ylabel=L"Current $J$", ms=1,
                 legend=false)
 end
+function plot_alpha_rho(path)
+        RHO = CSV.read(path, Tables.matrix, header=0)
+        gridsize = 200
+        index = 51              # alpha fest, beta variabel
+        CURRENT_line = CURRENT[:, index]
+        ALPHA, BETA = range(0, 1, gridsize), range(0, 1, gridsize)
+        alpha = round(ALPHA[index], digits=2)
+        scatter(BETA, CURRENT_line, title="Current for alpha = $alpha", 
+                xlabel=L"Exit rate $\beta$", 
+                ylabel=L"Current $J$", ms=1,
+                legend=false)
+end
 
 function plot_fs_iterations(path)
         DENSITY = CSV.read(path, Tables.matrix, header=0)

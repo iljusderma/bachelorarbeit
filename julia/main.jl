@@ -66,7 +66,7 @@ function update(state, hop_counter, α, β, p)
     return state, hop_counter
 end
 
-function simulate(α, β, L, t0, p1=1, p2=0.8)
+function simulate(α, β, L, t0, p1=1, p2=1)
     # initialize state
     state = initialize_state(L)
     # save state history in all_states every n-th time step
