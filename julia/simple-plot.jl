@@ -5,7 +5,7 @@ theme(:lime)
 # lattice size L, injection rate α, ejection rate β, hop rate p
 t0 = 100_000 # one time unit includes L updates of the lattice
 L = 500
-α = 0.7
+α = 0.3
 β = 0.6
 p1 = 1
 p2 = 1
@@ -13,7 +13,7 @@ p2 = 1
 # perform update
 @time begin
 #ProfileView.@profview
-STATES1, curr1 = simulate(α, β, L, t0, p1, p2)      # HD, LD phase
+STATES1, curr1 = simulate(α, β, L, t0, p1, 0.4)      # HD, LD phase
 end
 
 # plot data
