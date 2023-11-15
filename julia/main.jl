@@ -1,10 +1,10 @@
 using Random, Plots, Statistics, PlotThemes, LaTeXStrings
-theme(:lime)
+theme(:juno)
 
 function initialize_state(L)
     # initialize state
     state = zeros(L)
-    state[1:Int(floor(L*0.7))] .= 1
+    state[1:Int(floor(L*0.5))] .= 1
     return shuffle(state)
 end
 
@@ -70,7 +70,7 @@ function simulate(α, β, L, t0, p1=1, p2=1)
     # initialize state
     state = initialize_state(L)
     # save state history in all_states every n-th time step
-    n = 10*L
+    n = L
     STATES = zeros(L, Int((t0*L)/n))
     # insert Current measurement
     hop_counter = 0
