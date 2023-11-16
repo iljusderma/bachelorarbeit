@@ -34,7 +34,7 @@ function calc_V_p_curve(ALPHA, BETA, gridsize, t0, L)
     return RHO
 end
 
-function multipleV_p(t0)
+function V_p_diagram(t0)
     gridsize = 50
     α0 = 0.1
     ALPHA = range(0, 2*α0, gridsize)
@@ -54,22 +54,8 @@ function multipleV_p(t0)
     #CSV.write("alpha-rho-"*string(gridsize)*".csv",  Tables.table(RHO), writeheader=false)
 end
 
-function V_p(t0)
-    gridsize = 50
-    trans = 0.1
-    ALPHA = range(0, 2*trans, gridsize)
-    BETA = .- ALPHA .+ 2*trans  # apply shock at alpha = beta = 0.3
-    RHO = calc_V_p_curve(ALPHA, BETA, gridsize, t0, 200)
-    p = BETA .- ALPHA
-    scatter(p, RHO)
-    mid = Int(floor(gridsize*0.5))
-    leap[1:mid] .= -0.5 .*p[1:mid] .+ trans
-    leap[mid+1:end] .= -0.5 .*p[mid+1:end] .+ 1-trans
-    plot!(p, leap, label="L ⟶ ∞")
-end
-
 function mean_density(α, β, L, t0, p)
-    nos = 3 # Nos: number of simulations
+    nos = 500 # Nos: number of simulations
     @time begin
     TOTAL_DENSITY = zeros(Float64, t0, nos)
     for i in 1:nos
@@ -122,10 +108,9 @@ function small_plot()
     label="Expected density value")
 end
 
-#t0 = 20_000 # one time unit includes L updates of the lattice
-#L = 200
+t0 = 20_000 # one time unit includes L updates of the lattice
+L = 200
 
-# mean_density(0.3, 0.6, L, t0, 1) # (α, β, L, t0, p)
 # determine_current_map()
 # small_plot()
-multipleV_p(20_000)
+mean_density(0.2, 0.6, L, t0, 0.9) # (α, β, L, t0, p)
