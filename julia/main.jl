@@ -82,5 +82,5 @@ function simulate(α, β, L, t0, p1=1, p2=1)
             STATES[:, div(t, n)] = state
         end
     end
-    return STATES, hop_counter/10_000
+    return STATES, hop_counter/(t0)
 end

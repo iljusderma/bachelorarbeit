@@ -5,22 +5,22 @@ theme(:lime)
 # lattice size L, injection rate α, ejection rate β, hop rate p
 t0 = 100_000 # one time unit includes L updates of the lattice
 L = 500
-α = 0.3
-β = 0.6
+α = 0.8
+β = 0.8
 p1 = 1
 p2 = 1
 
 # perform update
 @time begin
 #ProfileView.@profview
-STATES1, curr1 = simulate(α, β, L, t0, p1, 0.4)      # HD, LD phase
+STATES, curr = simulate(α, β, L, t0, p1, p2)      # HD, LD phase
 end
 
 # plot data
-cut_STATES = STATES1[:, 2500:end]
+cut_STATES = STATES[:, 2500:end]
 densityprofile = vec(mean(cut_STATES, dims=2))
-totaldensity1 = vec(mean(STATES1, dims=1))
-println(mean(cut_STATES))
+totaldensity = vec(mean(STATES, dims=1))
+println(curr)
 
 
 scatter(densityprofile, ms=1, msw=0, 
