@@ -8,29 +8,29 @@ L = 500
 α = 0.8
 β = 0.8
 p1 = 1
-p2 = 1
+p2 = 0.3
 
 # perform update
 @time begin
 #ProfileView.@profview
-STATES, curr = simulate(α, β, L, t0, p1, p2)      # HD, LD phase
+STATES, CURRENT = simulate(α, β, L, t0, p1, p2)      # HD, LD phase
 end
 
 # plot data
 cut_STATES = STATES[:, 2500:end]
 densityprofile = vec(mean(cut_STATES, dims=2))
 totaldensity = vec(mean(STATES, dims=1))
-println(curr)
+println(mean(CURRENT[25_000:end]))
 
 
 scatter(densityprofile, ms=1, msw=0, 
     label="α=$α, β=$β, p1=$p1, p2=$p2", 
     ylims=[0, 1], 
-    title="Totaldensity",
-    ylabel=L"\langle \rho_{tot} \rangle", 
-    xlabel="Time t", 
+    title="Densityprofile",
+    ylabel=L"\langle \rho_i \rangle", 
+    xlabel="Lattice site i", 
     legend=:bottomright)
-#hline!([0.7], label="Expected density in HD phase")
-#hline!([0.6], label="Expected density in (HD, LD)", ls=:dash)
+hline!([1/(p2+1)], label="Expected density in left lattice")
+hline!([p2/(p2+1)], label="Expected density in right lattice", ls=:dash)
 
 #heatmap(STATES', ylabel="Time t", xlabel="Lattice site i")
