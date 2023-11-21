@@ -17,7 +17,7 @@ function calc_rho(α, β)
     return ρ
 end
 
-function iterate(α, p2, β)
+function iterate(α, β, p2)
     rho1, rho2 = 0, 0
     alpha2 = calc_alpha2(p2, rho1)
     beta1 = calc_beta1(p2, rho2)
@@ -39,6 +39,8 @@ function iterate(α, p2, β)
             println(rho1)
             println(rho2)
             break
+        elseif i == 100_000
+            println("Keine Konvergenz")
         else
             rho1 = calc_rho(α, beta1)
             rho2 = calc_rho(alpha2, β)
@@ -46,4 +48,4 @@ function iterate(α, p2, β)
     end
 end
 
-iterate(0.8, 0.7, 0.8)
+iterate(0.8, 0.8, 0.3)

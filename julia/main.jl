@@ -1,5 +1,4 @@
-using Random, Plots, Statistics, PlotThemes, LaTeXStrings
-theme(:juno)
+using Random, Plots, Statistics, LaTeXStrings
 
 function initialize_state(L)
     # initialize state
