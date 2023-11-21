@@ -18,20 +18,26 @@ function calc_rho(α, β)
 end
 
 function iterate(α, p2, β)
-    rho1, rho2 = 0.4, 0.5
+    rho1, rho2 = 0, 0
     alpha2 = calc_alpha2(p2, rho1)
     beta1 = calc_beta1(p2, rho2)
     rho1 = calc_rho(α, beta1)
     rho2 = calc_rho(alpha2, β)
     
-    for i in 1:100
+    for i in 1:100_000
         alpha2 = calc_alpha2(p2, rho1)
         beta1 = calc_beta1(p2, rho2)
+        #=
         println("------")
         println(rho1)
         println(rho2)
+        =#
         if rho1 == calc_rho(α, beta1) && rho2 == calc_rho(alpha2, β)
-            print("i=$i")
+            println("i=$i")
+            rho1 = round(calc_rho(α, beta1), digits=4)
+            rho2 = round(calc_rho(alpha2, β), digits=4)
+            println(rho1)
+            println(rho2)
             break
         else
             rho1 = calc_rho(α, beta1)
@@ -40,4 +46,4 @@ function iterate(α, p2, β)
     end
 end
 
-iterate(0.3, 0.4, 0.6)
+iterate(0.8, 0.7, 0.8)

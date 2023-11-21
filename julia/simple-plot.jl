@@ -2,9 +2,9 @@ include("main.jl")
 
 # initialize lattice parameters
 # lattice size L, injection rate α, ejection rate β, hop rate p
-t0 = 100_000 # one time unit includes L updates of the lattice
-L = 500
-α = 0.3
+t0 = 50_000 # one time unit includes L updates of the lattice
+L = 400
+α = 0.8
 β = 0.8
 p1 = 1
 p2 = 0.7
@@ -19,7 +19,9 @@ end
 cut_STATES = STATES[:, 2500:end]
 densityprofile = vec(mean(cut_STATES, dims=2))
 totaldensity = vec(mean(STATES, dims=1))
-println(mean(CURRENT[10_000:end]))
+#println(mean(CURRENT[10_000:end]))
+println(densityprofile[Int(L/2+1)])
+println(densityprofile[Int(L/2+2)])
 
 p = scatter(densityprofile, ms=1, msw=0, 
     label="α=$α, β=$β, p1=$p1, p2=$p2", 
@@ -28,8 +30,10 @@ p = scatter(densityprofile, ms=1, msw=0,
     ylabel=L"\langle \rho_i \rangle", 
     xlabel="Lattice site i", legend=:topright,
     size=(900, 600))
+
+
 #=
-P2 = range(0.4, p2, 6)[1:end-1]
+P2 = range(p2, 1, 6)[2:end]
 for p2 in P2
     _STATES, _CURRENT = simulate(α, β, L, t0, p1, p2)
     _cut_STATES = _STATES[:, 2500:end]
@@ -40,10 +44,11 @@ for p2 in P2
 end
 display(p)
 =#
+#=
 left, right = 1:Int(L/2), Int(L/2)+1:L
 plot!(left, fill(α/(p2), Int(L/2)), label="Expected density in left lattice LD")
 plot!(right, fill(α, Int(L/2)), label="Expected density in right lattice LD")
 
 plot!(left, fill(1/(p2+1), Int(L/2)), label="Expected density in left lattice MC", ls=:dash)
-plot!(right, fill(p2/(p2+1), Int(L/2)), label="Expected density in right lattice MC", ls=:dash)
+plot!(right, fill(p2/(p2+1), Int(L/2)), label="Expected density in right lattice MC", ls=:dash)=#
 #heatmap(STATES', ylabel="Time t", xlabel="Lattice site i")
