@@ -1,3 +1,5 @@
+using LaTeXStrings
+
 function calc_alpha2(p2, rho1)
     return p2*rho1    
 end
@@ -18,34 +20,59 @@ function calc_rho(α, β)
 end
 
 function iterate(α, β, p2)
-    rho1, rho2 = 0, 0
-    alpha2 = calc_alpha2(p2, rho1)
-    beta1 = calc_beta1(p2, rho2)
-    rho1 = calc_rho(α, beta1)
-    rho2 = calc_rho(alpha2, β)
-    
-    for i in 1:100_000
-        alpha2 = calc_alpha2(p2, rho1)
-        beta1 = calc_beta1(p2, rho2)
+    rhoA, rhoB = 1, 1
+    RHOn = zeros((2, 100_000))
+
+    for n in 1:100_000
+        alphaB = calc_alpha2(p2, rhoA)
+        betaA = calc_beta1(p2, rhoB)
         #=
         println("------")
         println(rho1)
         println(rho2)
         =#
-        if rho1 == calc_rho(α, beta1) && rho2 == calc_rho(alpha2, β)
-            println("i=$i")
-            rho1 = round(calc_rho(α, beta1), digits=4)
-            rho2 = round(calc_rho(alpha2, β), digits=4)
-            println(rho1)
-            println(rho2)
+        if rhoA == calc_rho(α, betaA) && rhoB == calc_rho(alphaB, β)
+            println("i=$n")
+            rhoA = round(calc_rho(α, betaA), digits=4)
+            rhoB = round(calc_rho(alphaB, β), digits=4)
+            #println(rho1)
+            #println(rho2)
             break
-        elseif i == 100_000
+        elseif n == 100_000
             println("Keine Konvergenz")
         else
-            rho1 = calc_rho(α, beta1)
-            rho2 = calc_rho(alpha2, β)
+            RHOn[:, n] = vec([rhoA, rhoB])
+            rhoA = calc_rho(α, betaA)
+            rhoB = calc_rho(alphaB, β)
         end
     end
+    RHOAn=RHOn[1, :][findall(x->x!=0, RHOn[1, :])]
+    return vec([rhoA, rhoB]), RHOAn
 end
 
-iterate(0.8, 0.8, 0.3)
+a, b = iterate(0.8, 0.8, 0.7)
+plot(b[1:25])
+
+
+#=
+α = 0.8
+β = 0.8
+solution = 100
+RHO = zeros((2,solution))
+P2 = range(0, 1, solution)
+for (i, p2) in enumerate(P2)
+    RHO[:, i] = iterate(α, β, p2)
+end
+
+
+
+
+# plot rho(p2)-diagram
+p = plot(P2, RHO[1,:], 
+    xlabel=L"p_2", ylabel=L"\rho", title=L"\alpha=\beta=0.8", 
+    label=L"\rho^A", 
+    xtickfont=12, ytickfont=12, 
+    guidefont=18, legendfont=18,
+    size=(800, 500))
+plot!(P2, RHO[2, :], label=L"\rho^B")
+display("image/png", p)=#
