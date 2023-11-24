@@ -1,4 +1,4 @@
-using LaTeXStrings
+using LaTeXStrings, Plots
 
 function calc_alpha2(p2, rho1)
     return p2*rho1    
@@ -50,18 +50,16 @@ function iterate(α, β, p2)
     return vec([rhoA, rhoB]), RHOAn
 end
 
-a, b = iterate(0.8, 0.8, 0.7)
-plot(b[1:25])
+#a, b = iterate(0.8, 0.8, 0.7)
+#plot(b[1:25])
 
-
-#=
-α = 0.8
+α = 0.4
 β = 0.8
-solution = 100
+solution = 1000
 RHO = zeros((2,solution))
 P2 = range(0, 1, solution)
 for (i, p2) in enumerate(P2)
-    RHO[:, i] = iterate(α, β, p2)
+    RHO[:, i], b = iterate(α, β, p2)
 end
 
 
@@ -69,10 +67,12 @@ end
 
 # plot rho(p2)-diagram
 p = plot(P2, RHO[1,:], 
-    xlabel=L"p_2", ylabel=L"\rho", title=L"\alpha=\beta=0.8", 
+    xlabel=L"p_2", ylabel=L"\rho", title="α=$α, β=$β", 
     label=L"\rho^A", 
     xtickfont=12, ytickfont=12, 
     guidefont=18, legendfont=18,
     size=(800, 500))
 plot!(P2, RHO[2, :], label=L"\rho^B")
-display("image/png", p)=#
+#hline!([α])
+#plot!(P2[50:end], P2[50:end] .* α)
+display("image/png", p)

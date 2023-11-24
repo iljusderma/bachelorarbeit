@@ -25,10 +25,10 @@ end
 # lattice size L, injection rate α, ejection rate β, hop rate p
 t0 = 100_000 # one time unit includes L updates of the lattice
 L = 500
-α = 0.3
-β = 0.3
+α = 0.4
+β = 0.8
 p1 = 1
-p2 = 1
+p2 = 0.4
 
 # perform update
 @time begin
@@ -44,24 +44,22 @@ totaldensity = vec(mean(STATES, dims=1))
 println(mean(densityprofile[1:Int(L/2+1)]))
 println(mean(densityprofile[Int(L/2+2):end]))
 
-p = scatter(densityprofile, 
+p = scatter(densityprofile, msw=0, 
     label="α=$α, β=$β, p=$p1", 
     ylims=[0, 1],
     ylabel=L"\langle \rho_i \rangle", 
     xlabel="Lattice site i", legend=:topright)
 
-#=
-P2 = range(p2, 1, 6)[2:end]
-for p2 in P2
-    _STATES, _CURRENT = simulate(α, β, L, t0, p1, p2)
-    _cut_STATES = _STATES[:, 2500:end]
-    _densityprofile = vec(mean(_cut_STATES, dims=2))
-    scatter!(_densityprofile, ms=1, msw=0, 
-    label="α=$α, β=$β, p1=$p1, p2=$p2")
-    println(p2)
-end
-display(p)
-=#
+# P2 = range(p2, 1, 4)[2:end]
+# for p2 in P2
+#     _STATES, _CURRENT = simulate(α, β, L, t0, p1, p2)
+#     _cut_STATES = _STATES[:, 2500:end]
+#     _densityprofile = vec(mean(_cut_STATES, dims=2))
+#     scatter!(_densityprofile, msw=0, 
+#     label="α=$α, β=$β, p1=$p1, p2=$p2")
+#     println(p2)
+# end
+
 #=
 left, right = 1:Int(L/2), Int(L/2)+1:L
 plot!(left, fill(α/(p2), Int(L/2)), label="Expected density in left lattice LD")
