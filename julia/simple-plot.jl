@@ -26,7 +26,7 @@ end
 t0 = 100_000 # one time unit includes L updates of the lattice
 L = 500
 α = 0.4
-β = 0.8
+β = 0.88
 p1 = 1
 p2 = 0.4
 
@@ -45,20 +45,20 @@ println(mean(densityprofile[1:Int(L/2+1)]))
 println(mean(densityprofile[Int(L/2+2):end]))
 
 p = scatter(densityprofile, msw=0, 
-    label="α=$α, β=$β, p=$p1", 
+    label="α=$α, β=$β, p1=$p1, p2=$p2", 
     ylims=[0, 1],
     ylabel=L"\langle \rho_i \rangle", 
     xlabel="Lattice site i", legend=:topright)
 
-# P2 = range(p2, 1, 4)[2:end]
-# for p2 in P2
-#     _STATES, _CURRENT = simulate(α, β, L, t0, p1, p2)
-#     _cut_STATES = _STATES[:, 2500:end]
-#     _densityprofile = vec(mean(_cut_STATES, dims=2))
-#     scatter!(_densityprofile, msw=0, 
-#     label="α=$α, β=$β, p1=$p1, p2=$p2")
-#     println(p2)
-# end
+P2 = range(p2, 1, 4)[2:end]
+for p2 in P2
+    _STATES, _CURRENT = simulate(α, β, L, t0, p1, p2)
+    _cut_STATES = _STATES[:, 2500:end]
+    _densityprofile = vec(mean(_cut_STATES, dims=2))
+    scatter!(_densityprofile, msw=0, 
+    label="α=$α, β=$β, p1=$p1, p2=$p2")
+    println(p2)
+end
 
 #=
 left, right = 1:Int(L/2), Int(L/2)+1:L
