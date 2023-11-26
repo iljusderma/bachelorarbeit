@@ -40,9 +40,6 @@ end
 cut_STATES = STATES[:, 2500:end]
 densityprofile = vec(mean(cut_STATES, dims=2))
 totaldensity = vec(mean(STATES, dims=1))
-#println(mean(CURRENT[10_000:end]))
-println(mean(densityprofile[1:Int(L/2+1)]))
-println(mean(densityprofile[Int(L/2+2):end]))
 
 p = scatter(densityprofile, msw=0, 
     label="α=$α, β=$β, p1=$p1, p2=$p2", 
