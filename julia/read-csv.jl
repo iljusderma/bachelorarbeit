@@ -1,5 +1,5 @@
 using CSV, Tables, Plots, LaTeXStrings, PlotThemes
-theme(:lime)
+theme(:default)
 
 function expected_current()
         gridsize = 200
@@ -10,7 +10,7 @@ function expected_current()
         ylabel=L"Entry rate $\alpha$")
 end
 
-function calc_current(alpha, beta)
+function calc_current(alpha, beta, p2)
         # contourlines
         current = 0
         if alpha <= beta && alpha < 0.5
@@ -18,20 +18,24 @@ function calc_current(alpha, beta)
         elseif beta < alpha && beta < 0.5
                 current = beta*(1 - beta)
         elseif alpha > 0.5 && beta > 0.5
-                current = 0.25
+                current = p2/(1+p2)^2
         end
         return current
 end
 
 function plot_current_map(path)
+        p2 = 0.3
         FLUX = CSV.read(path, Tables.matrix, header=0)
         gridsize = size(FLUX)[1]
         ALPHA, BETA = range(0, 1, gridsize), range(0, 1, gridsize)
-        Z = @. calc_current(ALPHA, BETA')
-        heatmap(ALPHA, BETA, FLUX, title= L"Current $J$", 
+        Z = @. calc_current(ALPHA, BETA', p2)
+        h = heatmap(ALPHA, BETA, FLUX, title= L"Current $J$", 
                 xlabel=L"Exit rate $\beta$", 
                 ylabel=L"Entry rate $\alpha$")
-        contour!(ALPHA, BETA, Z, levels=[0.05, 0.1, 0.15, 0.2, 0.25], color=:darkrainbow, lw=3)
+        contour!(ALPHA, BETA, Z, levels=range(0, p2/(1+p2)^2, 6)[2:end], color=:lightrainbow, lw=3)
+        hline!([p2/(1+p2)], ls=:dash, color=:black, label=L"\alpha_c", legend=:topright)
+        vline!([p2/(1+p2)], ls=:dash, color=:black, label=L"\beta_c")
+        display("image/png", h)
 end
 
 function plot_current_line(path)
@@ -79,4 +83,4 @@ function plot_fs_density()
                         label="density for L ⟶ ∞")
 end
 
-plot_current_map("/home/ilja/Documents/coding/bachelorarbeit/current-200-impurity.csv")
+plot_current_map("/home/ilja/bachelorarbeit/current-200-impurity.csv")
