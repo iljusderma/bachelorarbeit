@@ -18,17 +18,18 @@ function animate(snaplen, t0, STATES, α, β, p1)
         title="$(i*snaplen) iterations", 
         legend=:topright)
     end
-    gif(anim, fps=20)
+    g = gif(anim, fps=5)
+    display(g)
 end
 
 # initialize lattice parameters
 # lattice size L, injection rate α, ejection rate β, hop rate p
-t0 = 100_000 # one time unit includes L updates of the lattice
-L = 500
-α = 0.4
-β = 0.88
+t0 = 400_000 # one time unit includes L updates of the lattice
+L = 4000
+α = 0.8
+β = 0.8
 p1 = 1
-p2 = 0.4
+p2 = 0.3
 
 # perform update
 @time begin
@@ -37,25 +38,25 @@ STATES, CURRENT = simulate(α, β, L, t0, p1, p2)      # HD, LD phase
 end
 
 # plot data
-cut_STATES = STATES[:, 2500:end]
+cut_STATES = STATES[:, 5_000:end]
 densityprofile = vec(mean(cut_STATES, dims=2))
 totaldensity = vec(mean(STATES, dims=1))
 
-p = scatter(densityprofile, msw=0, 
+p = scatter(totaldensity, msw=0, ms=2,  
     label="α=$α, β=$β, p1=$p1, p2=$p2", 
     ylims=[0, 1],
     ylabel=L"\langle \rho_i \rangle", 
     xlabel="Lattice site i", legend=:topright)
 
-P2 = range(p2, 1, 4)[2:end]
-for p2 in P2
-    _STATES, _CURRENT = simulate(α, β, L, t0, p1, p2)
-    _cut_STATES = _STATES[:, 2500:end]
-    _densityprofile = vec(mean(_cut_STATES, dims=2))
-    scatter!(_densityprofile, msw=0, 
-    label="α=$α, β=$β, p1=$p1, p2=$p2")
-    println(p2)
-end
+# P2 = range(p2, 1, 4)[2:end]
+# for p2 in P2
+#     _STATES, _CURRENT = simulate(α, β, L, t0, p1, p2)
+#     _cut_STATES = _STATES[:, 2500:end]
+#     _densityprofile = vec(mean(_cut_STATES, dims=2))
+#     scatter!(_densityprofile, msw=0, 
+#     label="α=$α, β=$β, p1=$p1, p2=$p2")
+#     println(p2)
+# end
 
 #=
 left, right = 1:Int(L/2), Int(L/2)+1:L
@@ -65,5 +66,7 @@ plot!(right, fill(α, Int(L/2)), label="Expected density in right lattice LD")
 plot!(left, fill(1/(p2+1), Int(L/2)), label="Expected density in left lattice MC", ls=:dash)
 plot!(right, fill(p2/(p2+1), Int(L/2)), label="Expected density in right lattice MC", ls=:dash)
 #h = heatmap(STATES', ylabel="Time t", xlabel="Lattice site i", legend=false, c=:grays, fmt=:png)=#
+
+#animate(500, t0, STATES, α, β, p1)
 
 display("image/png", p) # export as png

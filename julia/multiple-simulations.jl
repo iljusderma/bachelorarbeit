@@ -1,20 +1,20 @@
 include("main.jl")
 using CSV, Tables, LsqFit
 
-function determine_current_map()
+function determine_current_map(L, t0)
     gridsize = 200
     CURRENT = zeros(gridsize, gridsize)
     ALPHA, BETA = range(0, 1, gridsize), range(0, 1, gridsize)
     for i in 1:length(CURRENT)
-        println(i)
         if (i)%10 == 0
             println(round(i/gridsize^2*100), "%")
         end
         # index to row x column
         a, b = (i - 1)%gridsize + 1, div(i-1, gridsize) + 1
         α, β = ALPHA[a], BETA[b]
-        STATES, CURRENT[i] = simulate(α, β, L, t0)
-        CSV.write("current-"*string(gridsize)*".csv",  Tables.table(CURRENT), writeheader=false)
+        STATES, CURR = simulate(α, β, L, t0, 1, 0.3)
+        CURRENT[i] = mean(CURR[1_000:end])
+        CSV.write("current-"*string(gridsize)*"-impurity.csv",  Tables.table(CURRENT), writeheader=false)
     end
 end
 
@@ -111,6 +111,6 @@ end
 t0 = 20_000 # one time unit includes L updates of the lattice
 L = 200
 
-# determine_current_map()
+determine_current_map(L, t0)
 # small_plot()
-mean_density(0.2, 0.6, L, t0, 0.9) # (α, β, L, t0, p)
+#mean_density(0.2, 0.6, L, t0, 0.9) # (α, β, L, t0, p)

@@ -79,4 +79,4 @@ function plot_fs_density()
                         label="density for L ⟶ ∞")
 end
 
-plot_current_map("/home/ilja/bachelorarbeit/current-200.csv")
+plot_current_map("/home/ilja/Documents/coding/bachelorarbeit/current-200-impurity.csv")
