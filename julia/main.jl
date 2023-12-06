@@ -75,7 +75,7 @@ function simulate(α, β, L, t0, p1=1, p2=1)
     hop_counter = 0
     CURRENT = zeros(Int((t0*L)/n))
     # perform L*t0 update steps
-    for t in 1:(t0*n)
+    for t in 1:(t0*L)
         state, hop_counter = pole_update(state, hop_counter, α, β, p1, p2)
         # save snapshot
         if t%n == 0

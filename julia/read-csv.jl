@@ -83,4 +83,13 @@ function plot_fs_density()
                         label="density for L ⟶ ∞")
 end
 
-plot_current_map("/home/ilja/bachelorarbeit/current-200-impurity.csv")
+function plot_fs_impurity_MC(path)
+        DATA = CSV.read(path, Tables.matrix, header=0)
+        scatter(1 ./ (DATA[1, :]) , DATA[2, :],
+        title="Deviation in MC phase L→∞", xlabel=L"\frac{1}{L}",
+        ylabel=L"\rho_{left, approx} - \langle \rho_{left} \rangle", 
+        label="α=0.8, β=0.8, p2=0.3")
+end
+
+# plot_current_map("/home/ilja/bachelorarbeit/current-200-impurity.csv")
+plot_fs_impurity_MC("fs-impurity-MC.csv")

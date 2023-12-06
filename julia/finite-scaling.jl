@@ -44,12 +44,23 @@ function fs_L(t, occupied_ratio, gridsize, flux_steps, rates)
     scatter(1 ./ L_array, DENSITY)
 end
 
-stat_L = 100
-stat_iterations = 50*1000
-occupied_ratio = 0.5
-gridsize = 200
-flux_steps = 50
-rates = [0.3, 0.8, 1, 0]
+function impurity_MC_deviation(α, β, p2)
+    # n: number of different simulations
+    n = 50
+    # DATA: first line includes values of L and second line the deviations
+    DATA = zeros(2, n)
+    # generate different even L in log range
+    DATA[1, :] = round.(exp.(range(4, 7, n))) .* 2
+    for (i, L) in enumerate(DATA[1, :])
+        STATES, CURRENT = simulate(α, β, Int(L), 50_000, 1, p2)
+        cut_STATES = STATES[:, 10_000:end]
+        densityprofile = vec(mean(cut_STATES, dims=2))
+        # difference between the approximated density and the average density in the middle of a sublattice
+        DATA[2, i] = 1/(p2+1) - mean(densityprofile[round(Int, L/8):round(Int, 3*L/8)])
+        println(L)
+    end
+    CSV.write("fs-impurity-MC.csv",  Tables.table(DATA), writeheader=false)
+    scatter(DATA[1,:], DATA[2,:])
+end
 
-# fs_iterations(stat_L, occupied_ratio, gridsize, flux_steps, rates)
-fs_L(stat_iterations, occupied_ratio, gridsize, flux_steps, rates)
+impurity_MC_deviation(0.8, 0.8, 0.3)

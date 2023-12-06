@@ -19,6 +19,7 @@ function determine_current_map(L, t0)
 end
 
 function calc_V_p_curve(ALPHA, BETA, gridsize, t0, L)
+    # phase transition
     RHO = zeros(gridsize)
     for i in 1:gridsize
         if (i)%10 == 0
