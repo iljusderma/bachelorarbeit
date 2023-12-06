@@ -50,7 +50,7 @@ function impurity_MC_deviation(α, β, p2)
     # DATA: first line includes values of L and second line the deviations
     DATA = zeros(2, n)
     # generate different even L in log range
-    DATA[1, :] = round.(exp.(range(4, 7, n))) .* 2
+    DATA[1, :] = round.(range(100, 2000, n)) .* 2
     for (i, L) in enumerate(DATA[1, :])
         STATES, CURRENT = simulate(α, β, Int(L), 50_000, 1, p2)
         cut_STATES = STATES[:, 10_000:end]
