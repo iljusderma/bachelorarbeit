@@ -1,5 +1,4 @@
-using CSV, Tables, Plots, LaTeXStrings, PlotThemes
-theme(:default)
+using CSV, Tables, Plots, LaTeXStrings
 
 function expected_current()
         gridsize = 200
@@ -101,5 +100,21 @@ function plot_rholeft_p2(path)
         display("image/png", p) # export as png
 end
 
+function plot_J_p2(path)
+        DATA = CSV.read(path, Tables.matrix, header=0)
+        println(DATA[1,1])
+        p = scatter(DATA[1, :] , DATA[2, :],
+                xlabel=L"p_2", 
+                ylabel=L"|J - \frac{1}{4}|",
+                label="α=0.4, β=0.8, L=500")
+        display("image/png", p) # export as png
+        vline!([0.67], 
+                label=L"p_{2,c}=\frac{\alpha}{1-\alpha}")
+        x = range(0, 1, 1000)
+        plot!(x, abs.(x ./ (x .+ 1).^2 .- 0.25), 
+                label=L"|J_{MC} - 1/4|")
+        plot!(x, abs.(zeros(1000) .+ 0.4(1-0.4) .- 0.25), 
+                label=L"|J_{LD}-1/4|")
+end
 # plot_current_map("/home/ilja/bachelorarbeit/current-200-impurity.csv")
-plot_rholeft_p2("rholeft-p2.csv")
+plot_J_p2("J-p2.csv")
