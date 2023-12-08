@@ -24,8 +24,8 @@ end
 
 # initialize lattice parameters
 # lattice size L, injection rate α, ejection rate β, hop rate p
-t0 = 50_000 # one time unit includes L updates of the lattice
-L = 200
+t0 = 100_000 # one time unit includes L updates of the lattice
+L = 500
 α = 0.8
 β = 0.8
 p1 = 1
@@ -37,16 +37,19 @@ STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
 end
 
 # plot data
-cut_STATES = STATES[:, 3_000:end]
+cut_STATES = STATES[:, 2_000:end]
 densityprofile = vec(mean(cut_STATES, dims=2))
 totaldensity = vec(mean(STATES, dims=1))
 
 p = scatter(densityprofile, msw=0, ms=2,  
-    label=L"t=10^4", 
+    label="α=$α, β=$β, p2=$p2", 
     ylims=[0, 1],
     ylabel=L"\langle \rho_i \rangle", 
     xlabel="Lattice site i", legend=:topright)
 
 #animate(500, t0, STATES, α, β, p1)
+
+plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{p_2+1}")
+plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{p_2}{p_2+1}")
 
 display("image/png", p) # export as png

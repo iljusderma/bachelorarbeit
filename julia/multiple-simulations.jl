@@ -109,9 +109,32 @@ function small_plot()
     label="Expected density value")
 end
 
+function rholeft_p2(α, β, L, t0)
+    # plot rho_leftbulk over p2 to 
+    # find critical p_2 describing a phase transition
+    n = 100
+    P2 = range(0, 1, n)
+    RHOLEFT = zeros(n)
+    for (i, p2) in enumerate(P2)
+        STATES, CURRENT = simulate(α, β, L, t0, 1, p2)
+        cut_STATES = STATES[:, 3_000:end]
+        densityprofile = vec(mean(cut_STATES, dims=2))
+        RHOLEFT[i] = abs(α - mean(densityprofile[round(Int, L/8):round(Int, 3*L/8)]))
+        println(p2)
+    end
+    DATA = [vec(P2)'; vec(RHOLEFT)']
+    CSV.write("rholeft-p2.csv",  Tables.table(DATA), writeheader=false)
+    p = scatter(P2, RHOLEFT, 
+        xlabel=L"p_2", 
+        ylabel=L"\langle \rho_{left} \rangle - α",
+        label="α=$α, β=$β, L=$L")
+    display("image/png", p) # export as png
+end
+
 t0 = 20_000 # one time unit includes L updates of the lattice
 L = 200
 
-determine_current_map(L, t0)
+# determine_current_map(L, t0)
 # small_plot()
-#mean_density(0.2, 0.6, L, t0, 0.9) # (α, β, L, t0, p)
+# mean_density(0.2, 0.6, L, t0, 0.9) # (α, β, L, t0, p)
+rholeft_p2(0.2, 0.8, 500, 50_000)

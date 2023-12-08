@@ -91,5 +91,15 @@ function plot_fs_impurity_MC(path)
         label="α=0.8, β=0.8, p2=0.3")
 end
 
+function plot_rholeft_p2(path)
+        DATA = CSV.read(path, Tables.matrix, header=0)
+        println(DATA[1,1])
+        p = scatter(DATA[1, :] , DATA[2, :],
+                xlabel=L"p_2", 
+                ylabel=L"|\langle \rho_{left} \rangle - \alpha|",
+                label="α=0.2, β=0.8, L=500")
+        display("image/png", p) # export as png
+end
+
 # plot_current_map("/home/ilja/bachelorarbeit/current-200-impurity.csv")
-plot_fs_impurity_MC("fs-impurity-MC.csv")
+plot_rholeft_p2("rholeft-p2.csv")
