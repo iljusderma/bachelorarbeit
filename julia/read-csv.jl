@@ -124,23 +124,23 @@ function plot_rholeft_p2(path)
         display("image/png", p) # export as png
 end
 
-function plot_J_p2(path)
+function plot_J_p2(path, α, β)
         DATA = CSV.read(path, Tables.matrix, header=0)
         println(DATA[1,1])
         p = scatter(DATA[1, :] , DATA[2, :],
                 xlabel=L"p_2", 
                 ylabel=L"|J - \frac{1}{4}|",
-                label="α=0.4, β=0.8, L=500")
-        display("image/png", p) # export as png
-        vline!([0.67], 
+                label="α=$α, β=$β, L=500", dpi=300)
+        vline!([0.67], lw=2, 
                 label=L"p_{2,c}=\frac{\alpha}{1-\alpha}")
         x = range(0, 1, 1000)
         plot!(x, abs.(x ./ (x .+ 1).^2 .- 0.25), 
-                label=L"|J_{MC} - 1/4|")
-        plot!(x, abs.(zeros(1000) .+ 0.4(1-0.4) .- 0.25), 
-                label=L"|J_{LD}-1/4|")
+                label=L"|J_{MC} - 1/4|", lw=2)
+        plot!(x, abs.(zeros(1000) .+ α*(1-α) .- 0.25), 
+                label=L"|J_{LD}-1/4|", lw=2)
+        display("image/png", p) # export as png
 end
 # plot_current_map("current-200-impurity.csv")
-# plot_J_p2("J-p2.csv")
+plot_J_p2("J-p2.csv", 0.4, 0.8)
 # plot_rholeft_p2("rholeft-p2.csv")
-plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
+# plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
