@@ -26,10 +26,10 @@ end
 # lattice size L, injection rate α, ejection rate β, hop rate p
 t0 = 100_000 # one time unit includes L updates of the lattice
 L = 500
-α = 0.8
-β = 0.8
+α = 1
+β = 1
 p1 = 1
-p2 = 0.3
+p2 = 1
 
 # perform update
 @time begin
@@ -51,5 +51,5 @@ p = scatter(densityprofile, msw=0, ms=2,
 
 plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{p_2+1}")
 plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{p_2}{p_2+1}")
-
+println(mean(CURRENT))
 display("image/png", p) # export as png

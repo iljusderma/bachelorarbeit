@@ -157,5 +157,5 @@ L = 200
 # determine_current_map(L, t0)
 # small_plot()
 # mean_density(0.2, 0.6, L, t0, 0.9) # (α, β, L, t0, p)
-# rholeft_p2(0.4, 0.8, 500, 50_000)
-J_p2(0.4, 0.8, 500, 50_000)
+rholeft_p2(0.5, 0.5, 500, 50_000)
+# J_p2(0.4, 0.8, 500, 50_000)

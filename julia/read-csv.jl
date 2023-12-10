@@ -1,4 +1,4 @@
-using CSV, Tables, Plots, LaTeXStrings
+using CSV, Tables, Plots, LaTeXStrings, LsqFit
 
 function expected_current()
         gridsize = 200
@@ -30,7 +30,8 @@ function plot_current_map(path)
         Z = @. calc_current(ALPHA, BETA', p2)
         h = heatmap(ALPHA, BETA, FLUX, title= L"Current $J$", 
                 xlabel=L"Exit rate $\beta$", 
-                ylabel=L"Entry rate $\alpha$")
+                ylabel=L"Entry rate $\alpha$", 
+                aspectratio=true, xlims=(0,1), dpi=500)
         contour!(ALPHA, BETA, Z, levels=range(0, p2/(1+p2)^2, 6)[2:end], color=:lightrainbow, lw=3)
         hline!([p2/(1+p2)], ls=:dash, color=:black, label=L"\alpha_c", legend=:topright)
         vline!([p2/(1+p2)], ls=:dash, color=:black, label=L"\beta_c")
@@ -82,12 +83,35 @@ function plot_fs_density()
                         label="density for L ⟶ ∞")
 end
 
-function plot_fs_impurity_MC(path)
+function plot_fs_impurity_MC_density_deviation(path)
         DATA = CSV.read(path, Tables.matrix, header=0)
-        scatter(1 ./ (DATA[1, :]) , DATA[2, :],
-        title="Deviation in MC phase L→∞", xlabel=L"\frac{1}{L}",
-        ylabel=L"\rho_{left, approx} - \langle \rho_{left} \rangle", 
-        label="α=0.8, β=0.8, p2=0.3")
+        p = scatter((DATA[1, :]) , DATA[2, :],
+                title="Deviation in MC phase L→∞", xlabel=L"L",
+                ylabel=L"\rho_{left, approx} - \langle \rho_{left} \rangle", 
+                label="α=0.8, β=0.8, p2=0.3", dpi=300)
+        display("image/png", p)
+end
+
+function plot_fs_impurity_MC_current_deviation(path)
+        DATA = CSV.read(path, Tables.matrix, header=0)
+        p = scatter((DATA[1, :]) , DATA[2, :],  
+                xlims=(2^5, 2^12), ylims=(10^-7, 10^-2), 
+                xscale=:log2, yscale=:log10,
+                title="Deviation in MC phase L→∞", xlabel=L"L",
+                ylabel=L"J-1/4", 
+                label="α=1, β=1, p2=1", dpi=300)
+        # linear fit
+        @. model(x, par) = par[1]*x^-1
+        xdata = DATA[1, :]
+        ydata = DATA[2, :]
+        par0 = [1.]
+        fit = curve_fit(model, xdata, ydata, par0)
+        params = @. round(fit.param, digits=2)
+        println(params)
+        
+        # plot fit
+        plot!(xdata, model(xdata, params), label=L"Fit with $ax^{-1}$")
+        display("image/png", p)
 end
 
 function plot_rholeft_p2(path)
@@ -96,7 +120,7 @@ function plot_rholeft_p2(path)
         p = scatter(DATA[1, :] , DATA[2, :],
                 xlabel=L"p_2", 
                 ylabel=L"|\langle \rho_{left} \rangle - \alpha|",
-                label="α=0.2, β=0.8, L=500")
+                label="α=0.2, β=0.8, L=500", dpi=300)
         display("image/png", p) # export as png
 end
 
@@ -116,5 +140,7 @@ function plot_J_p2(path)
         plot!(x, abs.(zeros(1000) .+ 0.4(1-0.4) .- 0.25), 
                 label=L"|J_{LD}-1/4|")
 end
-# plot_current_map("/home/ilja/bachelorarbeit/current-200-impurity.csv")
-plot_J_p2("J-p2.csv")
+# plot_current_map("current-200-impurity.csv")
+# plot_J_p2("J-p2.csv")
+# plot_rholeft_p2("rholeft-p2.csv")
+plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
