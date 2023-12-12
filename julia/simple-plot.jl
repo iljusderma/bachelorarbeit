@@ -26,10 +26,10 @@ end
 # lattice size L, injection rate α, ejection rate β, hop rate p
 t0 = 100_000 # one time unit includes L updates of the lattice
 L = 500
-α = 1
-β = 1
+α = 0.4
+β = 0.8
 p1 = 1
-p2 = 1
+p2 = 0.4
 
 # perform update
 @time begin
