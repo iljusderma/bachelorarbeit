@@ -1,4 +1,4 @@
-using CSV, Tables, Plots, LaTeXStrings, LsqFit
+using CSV, Tables, Plots, LaTeXStrings, LsqFit, Statistics
 
 function expected_current()
         gridsize = 200
@@ -116,7 +116,7 @@ end
 
 function plot_rholeft_p2(path)
         DATA = CSV.read(path, Tables.matrix, header=0)
-        p = scatter(DATA[1, :], (DATA[2, :]),
+        p = scatter(DATA[1, :], DATA[2, :],
                 xlabel=L"p_2", 
                 ylabel=L"|\langle \rho_{left} \rangle - \alpha|",
                 label="α=0.2, β=0.8, L=500", dpi=300)
@@ -127,24 +127,29 @@ function plot_critical_p2_fromrholeft(path)
         DATA = CSV.read(path, Tables.matrix, header=0)
         A = 0.0:0.05:0.5
         P2 = DATA[1, :]
-        P2C = zeros(length(A))
+        P2C = zeros(2, length(A))
         for (i, LEFT) in enumerate(eachrow(DATA[2:end, :]))
-                P2C[i] = P2[(LEFT .- 0.05) .> 0][end]
+                # heap from the right
+                P2C[1, i] = P2[(LEFT .- 0.03) .< 0][1]
+                # heap from the left
+                P2C[2, i] = P2[(LEFT .- 1 ./ (1 .+ LEFT) .+ 0.2 .+ 0.03) .> 0][end]
         end
-        p = scatter(A, P2C,
+        xdata = A
+        ydata = vec(mean(P2C, dims=1))
+        yerr = abs.((P2C[1, :] .- P2C[2, :]) ./ 2)
+        p = scatter(xdata, ydata, yerr=yerr, 
                 xlabel=L"\alpha", 
                 ylabel=L"p_{2,c}",
                 label="β=0.8, L=500", dpi=300)
         # linear fit
         @. model(x, par) = par[1]*x
-        xdata = A
-        ydata = P2C
         par0 = [1.0]
-        fit = curve_fit(model, xdata, ydata, par0)
+        fit = curve_fit(model, xdata[1:7], ydata[1:7], par0)
         params = @. round(fit.param, digits=2)
 
         # plot fit
-        plot!(xdata, model(xdata, params), label=L"Fit with $ax$")
+        plot!(xdata[1:7], model(xdata[1:7], params), label=L"Fit with $ax$")
+        plot!(xdata[7:end], model(xdata[7:end], params), ls=:dash, label=:none)
         display("image/png", p) # export as png
 end
 
@@ -166,6 +171,6 @@ function plot_J_p2(path, α, β)
 end
 # plot_current_map("current-200-impurity.csv")
 # plot_J_p2("J-p2.csv", 0.4, 0.8)
-plot_rholeft_p2("rholeft-p2.csv")
+# plot_rholeft_p2("rholeft-p2.csv")
 # plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
-# plot_critical_p2_fromrholeft("multiple-rholeft-p2.csv")
+plot_critical_p2_fromrholeft("multiple-rholeft-p2.csv")
