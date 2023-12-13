@@ -116,7 +116,7 @@ end
 
 function plot_rholeft_p2(path)
         DATA = CSV.read(path, Tables.matrix, header=0)
-        p = scatter(DATA[1, :], log.((DATA[2, :]) .- 0.03),
+        p = scatter(DATA[1, :], (DATA[2, :]),
                 xlabel=L"p_2", 
                 ylabel=L"|\langle \rho_{left} \rangle - \alpha|",
                 label="α=0.2, β=0.8, L=500", dpi=300)
@@ -128,13 +128,23 @@ function plot_critical_p2_fromrholeft(path)
         A = 0.0:0.05:0.5
         P2 = DATA[1, :]
         P2C = zeros(length(A))
-        for (i, LEFT) in enumerate(eachrow(DATA[2:end]))
-                P2C[i] = P2[LEFT .- 0.05 .< 0][end]
+        for (i, LEFT) in enumerate(eachrow(DATA[2:end, :]))
+                P2C[i] = P2[(LEFT .- 0.05) .> 0][end]
         end
-        p = scatter(DATA[1, :], log.((DATA[2, :]) .- 0.03),
-                xlabel=L"p_2", 
-                ylabel=L"|\langle \rho_{left} \rangle - \alpha|",
-                label="α=0.2, β=0.8, L=500", dpi=300)
+        p = scatter(A, P2C,
+                xlabel=L"\alpha", 
+                ylabel=L"p_{2,c}",
+                label="β=0.8, L=500", dpi=300)
+        # linear fit
+        @. model(x, par) = par[1]*x
+        xdata = A
+        ydata = P2C
+        par0 = [1.0]
+        fit = curve_fit(model, xdata, ydata, par0)
+        params = @. round(fit.param, digits=2)
+
+        # plot fit
+        plot!(xdata, model(xdata, params), label=L"Fit with $ax$")
         display("image/png", p) # export as png
 end
 
@@ -158,3 +168,4 @@ end
 # plot_J_p2("J-p2.csv", 0.4, 0.8)
 plot_rholeft_p2("rholeft-p2.csv")
 # plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
+# plot_critical_p2_fromrholeft("multiple-rholeft-p2.csv")
