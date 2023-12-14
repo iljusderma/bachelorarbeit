@@ -2,15 +2,15 @@ using Random, Plots, Statistics, LaTeXStrings
 
 function initialize_state(L)
     # initialize state
-    state = zeros(L)
-    state[1:Int(floor(L*0.5))] .= 1
-    return shuffle(state)
+    state = bitrand(L)
+    return state
 end
 
 function pole_update(state, hop_counter, α, β, p1, p2)
     L = length(state)
     site = rand(0:L)
     if site == 0
+        BitArray(undef, L)
         if state[1] == 0 && rand() < α
             # injection
             state[1] += 1
