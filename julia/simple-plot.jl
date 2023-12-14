@@ -24,8 +24,8 @@ end
 
 # initialize lattice parameters
 # lattice size L, injection rate α, ejection rate β, hop rate p
-t0 = 100_000 # one time unit includes L updates of the lattice
-L = 500
+L = 1000
+t0 = 10*L^2 # one time unit includes L updates of the lattice
 α = 0.4
 β = 0.8
 p1 = 1
