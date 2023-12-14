@@ -65,7 +65,7 @@ end
 
 function impurity_MC_current_deviation(α, β, p2)
     # n: number of different simulations
-    n = 6
+    n = 7
     # DATA: first line includes values of L and second line the deviations
     DATA = zeros(3, n + 1)
     # generate different even L in log range
