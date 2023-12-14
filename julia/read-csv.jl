@@ -94,7 +94,7 @@ end
 
 function plot_fs_impurity_MC_current_deviation(path)
         DATA = CSV.read(path, Tables.matrix, header=0)
-        p = scatter((DATA[1, :]) , DATA[2, :],  
+        p = scatter((DATA[1, :]) , DATA[2, :], yerr=DATA[3, :], 
                 xlims=(2^5, 2^12), ylims=(10^-7, 10^-2), 
                 xscale=:log2, yscale=:log10,
                 title="Deviation in MC phase L→∞", xlabel=L"L",
@@ -166,6 +166,6 @@ function plot_J_p2(path, α, β)
 end
 # plot_current_map("current-200-impurity.csv")
 # plot_J_p2("J-p2.csv", 0.4, 0.8)
-plot_rholeft_p2("rholeft-p2.csv")
-# plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
+# plot_rholeft_p2("rholeft-p2.csv")
+plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
 # plot_critical_p2_fromrholeft("multiple-rholeft-p2.csv")
