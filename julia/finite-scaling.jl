@@ -71,10 +71,10 @@ function impurity_MC_current_deviation(α, β, p2)
     # generate different even L in log range
     DATA[1, :] = round.(2 .^ range(6, 11))
     for (i, L) in enumerate(DATA[1, :])
-        STATES, CURRENT = simulate(α, β, Int(L), 100_000, 1, p2)
+        STATES, CURRENT = simulate(α, β, Int(L), 1_000_000, 1, p2)
         # difference between the approximated density and the average density in the middle of a sublattice
         DATA[2, i] = mean(CURRENT[3:end]) - p2/(p2+1)^2
-        DATA[3, i] = std(CURRENT[3:end])
+        DATA[3, i] = std(CURRENT[3:end])/sqrt(length(CURRENT[3:end]))
         println(L)
     end
     CSV.write("fs-impurity-MC-current-deviation.csv",  Tables.table(DATA), writeheader=false)

@@ -73,16 +73,16 @@ function simulate(α, β, L, t0, p1=1, p2=1)
     STATES = zeros(L, Int((t0*L)/n))
     # insert Current measurement
     hop_counter = 0
-    CURRENT = zeros(Int((t0*L)/(10_000*n)))
+    CURRENT = zeros(Int((t0*L)/(1_000*n)))
     # perform L*t0 update steps
     for t in 1:(t0*L)
         state, hop_counter = pole_update(state, hop_counter, α, β, p1, p2)
         # save snapshot
         if t%n == 0
             STATES[:, div(t, n)] = state
-            if t%(10_000*n) == 0
+            if t%(1_000*n) == 0
                 # determine current every 1_000*L-th update
-                CURRENT[div(t, 10_000*n)] = hop_counter/10_000
+                CURRENT[div(t, 1_000*n)] = hop_counter/1_000
                 hop_counter = 0
             end
         end
