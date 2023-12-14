@@ -95,7 +95,7 @@ end
 function plot_fs_impurity_MC_current_deviation(path)
         DATA = CSV.read(path, Tables.matrix, header=0)
         p = scatter((DATA[1, :]) , DATA[2, :], yerr=DATA[3, :], 
-                xlims=(2^5, 2^12), ylims=(10^-7, 10^-2), 
+                xlims=(2^6, 2^14), ylims=(10^-7, 10^-2), 
                 xscale=:log2, yscale=:log10,
                 title="Deviation in MC phase L→∞", xlabel=L"L",
                 ylabel=L"J-1/4", 

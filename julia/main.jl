@@ -42,11 +42,11 @@ function simulate(α, β, L, t0, p1=1, p2=1)
     # initialize state
     state = initialize_state(L)
     # save state history in all_states every n-th time step
-    n = 10
-    STATES = BitArray(undef, (L, Int(t0/n)))
+    n = 1000
+    STATES = BitArray(undef, (L, Int(round(t0/n))))
     # insert Current measurement
     hop_counter = 0
-    CURRENT = zeros(Int(t0/n))
+    CURRENT = zeros(Int(round(t0/n)))
     # perform L*t0 update steps
     for t in 1:(t0*L)
         state, hop_counter = update(state, hop_counter, α, β, p1, p2)
