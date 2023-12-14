@@ -172,10 +172,5 @@ end
 # plot_current_map("current-200-impurity.csv")
 # plot_J_p2("J-p2.csv", 0.4, 0.8)
 # plot_rholeft_p2("rholeft-p2.csv")
-<<<<<<< HEAD
-# plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
-plot_critical_p2_fromrholeft("multiple-rholeft-p2.csv")
-=======
 plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
 # plot_critical_p2_fromrholeft("multiple-rholeft-p2.csv")
->>>>>>> 32dc8a3907520ecc8c569c85fb25dae7a3acf2b5
