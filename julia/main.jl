@@ -42,22 +42,20 @@ function simulate(α, β, L, t0, p1=1, p2=1)
     # initialize state
     state = initialize_state(L)
     # save state history in all_states every n-th time step
-    n = L
-    STATES = BitArray(undef, (L, Int((t0*L)/n)))
+    n = 10
+    STATES = BitArray(undef, (L, Int(t0/n)))
     # insert Current measurement
     hop_counter = 0
-    CURRENT = zeros(Int((t0*L)/(1_000*n)))
+    CURRENT = zeros(Int(t0/n))
     # perform L*t0 update steps
     for t in 1:(t0*L)
         state, hop_counter = update(state, hop_counter, α, β, p1, p2)
         # save snapshot
-        if t%n == 0
-            STATES[:, div(t, n)] = state
-            if t%(1_000*n) == 0
-                # determine current every 1_000*L-th update
-                CURRENT[div(t, 1_000*n)] = hop_counter/1_000
-                hop_counter = 0
-            end
+        if t%(n*L) == 0
+            STATES[:, div(t, n*L)] = state
+            # determine current every 1_000*L-th update
+            CURRENT[div(t, n*L)] = hop_counter/n
+            hop_counter = 0
         end
     end
     return STATES, CURRENT

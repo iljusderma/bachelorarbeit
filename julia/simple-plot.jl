@@ -24,8 +24,8 @@ end
 
 # initialize lattice parameters
 # lattice size L, injection rate α, ejection rate β, hop rate p
-L = 1000
-t0 = 10*L^2 # one time unit includes L updates of the lattice
+t0 = 1_000_000 # one time unit includes L updates of the lattice
+L = 500
 α = 0.4
 β = 0.8
 p1 = 1
@@ -37,7 +37,7 @@ STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
 end
 
 # plot data
-cut_STATES = STATES[:, 2_000:end]
+cut_STATES = STATES
 densityprofile = vec(mean(cut_STATES, dims=2))
 totaldensity = vec(mean(STATES, dims=1))
 
