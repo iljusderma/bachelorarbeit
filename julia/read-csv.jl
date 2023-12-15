@@ -150,6 +150,8 @@ function plot_critical_p2_fromrholeft(path)
         # plot fit
         plot!(xdata[1:7], model(xdata[1:7], params), label=L"Fit with $ax$")
         plot!(xdata[7:end], model(xdata[7:end], params), ls=:dash, label=:none)
+        α = 0:0.005:0.5
+        plot!(α, α ./ (1 .- α), label=L"\frac{\alpha}{1-\alpha}")
         display("image/png", p) # export as png
 end
 
@@ -172,5 +174,5 @@ end
 # plot_current_map("current-200-impurity.csv")
 # plot_J_p2("J-p2.csv", 0.4, 0.8)
 # plot_rholeft_p2("rholeft-p2.csv")
-plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
-# plot_critical_p2_fromrholeft("multiple-rholeft-p2.csv")
+# plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
+plot_critical_p2_fromrholeft("multiple-rholeft-p2.csv")
