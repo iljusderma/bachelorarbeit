@@ -1,4 +1,4 @@
-using CSV, Tables, Plots, LaTeXStrings, LsqFit
+using CSV, Tables, Plots, LaTeXStrings, LsqFit, Statistics
 
 function expected_current()
         gridsize = 200
@@ -85,11 +85,16 @@ end
 
 function plot_fs_impurity_MC_density_deviation(path)
         DATA = CSV.read(path, Tables.matrix, header=0)
-        p = scatter((DATA[1, :]) , DATA[2, :],
+        p = scatter((DATA[1, :]) , DATA[2, :], 
+                ylims=(0, 0.06),
                 title="Deviation in MC phase L→∞", xlabel=L"L",
                 ylabel=L"\rho_{left, approx} - \langle \rho_{left} \rangle", 
                 label="α=0.8, β=0.8, p2=0.3", dpi=300)
-        display("image/png", p)
+        deviation = mean(DATA[2, :])
+        deviation_err = std(DATA[2, :])/sqrt(length(DATA[2, :]))
+        println(deviation, deviation_err)
+        hline!([deviation], yerr=[deviation_err], label="average")
+        display("image/pdf", p)
 end
 
 function plot_fs_impurity_MC_current_deviation(path)
@@ -167,5 +172,6 @@ end
 # plot_current_map("current-200-impurity.csv")
 # plot_J_p2("J-p2.csv", 0.4, 0.8)
 # plot_rholeft_p2("rholeft-p2.csv")
-plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
-# plot_critical_p2_fromrholeft("multiple-rholeft-p2.csv")
+# plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
+plot_critical_p2_fromrholeft("multiple-rholeft-p2.csv")
+# plot_fs_impurity_MC_density_deviation("fs-impurity-MC-density-deviation.csv")
