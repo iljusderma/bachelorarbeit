@@ -65,11 +65,11 @@ end
 
 function impurity_MC_current_deviation(α, β, p2)
     # n: number of different simulations
-    n = 7
+    n = 4
     # DATA: first line includes values of L and second line the deviations
     DATA = zeros(3, n + 1)
     # generate different even L in log range
-    DATA[1, :] = 2 .^ range(7, 7 + n)
+    DATA[1, :] = 2 .^ range(5, 5 + n)
     for (i, L) in enumerate(DATA[1, :])
         STATES, CURRENT = simulate(α, β, Int(L), Int(10*L^2), 1, p2)
         # difference between the approximated density and the average density in the middle of a sublattice
