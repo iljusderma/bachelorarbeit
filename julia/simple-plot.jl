@@ -42,7 +42,7 @@ densityprofile = vec(mean(cut_STATES, dims=2))
 totaldensity = vec(mean(STATES, dims=1))
 
 plot1 = scatter(densityprofile, msw=0, ms=2,  
-    label="α=$α, β=$β", 
+    label="α=$α, β=$β", title="a)", 
     ylims=[0, 1],
     ylabel=L"\langle \rho_i \rangle", 
     xlabel="Lattice site i", legend=:topright)
@@ -57,7 +57,7 @@ densityprofile = vec(mean(cut_STATES, dims=2))
 totaldensity = vec(mean(STATES, dims=1))
 
 plot2 = scatter(densityprofile, msw=0, ms=2,  
-    label="α=$α, β=$β", 
+    label="α=$α, β=$β", title="b)", 
     ylims=[0, 1],
     ylabel=L"\langle \rho_i \rangle", 
     xlabel="Lattice site i", legend=:topright)
@@ -72,7 +72,7 @@ densityprofile = vec(mean(cut_STATES, dims=2))
 totaldensity = vec(mean(STATES, dims=1))
 
 plot3 = scatter(densityprofile, msw=0, ms=2,  
-    label="α=$α, β=$β", 
+    label="α=$α, β=$β", title="c)", 
     ylims=[0, 1],
     ylabel=L"\langle \rho_i \rangle", 
     xlabel="Lattice site i", legend=:topright)
@@ -83,7 +83,7 @@ STATES, CURRENT = simulate(α, β, L, 5_000, p1, p2)
 densityprofile = vec(mean(STATES, dims=2))
 
 plot4 = scatter(densityprofile, msw=0, ms=2,  
-    label="α=$α, β=$β", 
+    label="α=$α, β=$β", title="d)", 
     ylims=[0, 1],
     ylabel=L"\langle \rho_i \rangle", 
     xlabel="Lattice site i", legend=:topright)
