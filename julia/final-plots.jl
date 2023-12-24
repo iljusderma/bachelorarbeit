@@ -94,19 +94,19 @@ function modified_TASEP_phases(phase)
     densityprofile = vec(mean(STATES, dims=2))
     plot1 = scatter(densityprofile, msw=0, ms=2, 
         title="α=$α, β=$β", titleloc=:left, titlefont=12, 
-        label="d=$p2",  
+        label=L"$d$ = $0.25$",  
         ylims=[0, 1],
         ylabel=L"\langle \rho_i \rangle", 
-        xlabel="Lattice site i", legend=:outerright) #aspectratio=500)
+        xlabel=L"Lattice site $i$", legend=:outerright) #aspectratio=500)
     y = zeros(L) .+ α/p2
-    plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{p_2+1}")
-    plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{p_2}{p_2+1}")
+    plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{d+1}")
+    plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{d}{d+1}")
     p2 = 0.85
     STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
     densityprofile = vec(mean(STATES, dims=2))
     scatter!(densityprofile, msw=0, ms=2,  
-        label="d=$p2")
-    hline!([α/p2], ls=:dash, label=L"\frac{\alpha}{p2}")
+        label=L"$d$ = $0.85$")
+    hline!([α/p2], ls=:dash, label=L"\frac{\alpha}{d}")
     end
 
     if phase==2
@@ -116,13 +116,20 @@ function modified_TASEP_phases(phase)
     STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
     densityprofile = vec(mean(STATES, dims=2))
     plot2 = scatter(densityprofile, msw=0, ms=2,  
-        label="d=$p2", 
+        label=L"$d$ = $0.25$", 
         title="α=$α, β=$β", titleloc=:left, titlefont=12, 
         ylims=[0, 1],
         ylabel=L"\langle \rho_i \rangle", 
-        xlabel="Lattice site i", legend=:outerright)
-    plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{p_2+1}")
-    plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{p_2}{p_2+1}")
+        xlabel=L"Lattice site $i$", legend=:outerright)
+    plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{d+1}")
+    plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{d}{d+1}")
+    p2=0.85
+    STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
+    densityprofile = vec(mean(STATES, dims=2))
+    scatter!(densityprofile, msw=0, ms=2,  
+        label=L"$d$ = $0.85$")
+    plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=false, color=palette(:default)[2])
+    plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=false, color=palette(:default)[3])
     end
     
     if phase==3
@@ -132,21 +139,20 @@ function modified_TASEP_phases(phase)
     STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
     densityprofile = vec(mean(STATES, dims=2))
     plot3 = scatter(densityprofile, msw=0, ms=2,  
-        label="d=$p2", 
+        label=L"$d$ = $0.25$", 
         title="α=$α, β=$β", titleloc=:left, titlefont=12, 
         ylims=[0, 1],
         ylabel=L"\langle \rho_i \rangle", 
-        xlabel="Lattice site i", legend=:outerright)
+        xlabel=L"Lattice site $i$", legend=:outerright)
     y = zeros(L) .+ (1-β/p2)
-    plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{p_2+1}")
-    plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{p_2}{p_2+1}")
-    
+    plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{d+1}")
+    plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{d}{d+1}")
     p2 = 0.85
     STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
     densityprofile = vec(mean(STATES, dims=2))
     scatter!(densityprofile, msw=0, ms=2,  
-        label="d=$p2")
-    hline!([1-β/p2], ls=:dash, label=L"\frac{\alpha}{p2}")
+        label=L"$d$ = $0.85$")
+    hline!([1-β/p2], ls=:dash, label=L"1-\frac{\beta}{d}")
     end
     # plot(plot1, plot2, plot3, layout=(1, 3), size=(600,210))
     savefig("XX-densityprofile.pdf")

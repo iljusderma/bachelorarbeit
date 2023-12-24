@@ -44,7 +44,7 @@ function V_p_diagram(t0)
     RHO200 = calc_V_p_curve(ALPHA, BETA, gridsize, t0, 200)
     p = BETA .- ALPHA
     scatter(BETA .- ALPHA, RHO10, label="L=10", 
-    title="V(p)-diagram with p(α=β=$α0)=0", xlabel="p", ylabel="V", ms=3, 
+    title="V(p)-diagram", xlabel="p", ylabel="V", ms=3, 
     msw=0, ylims=[0, 1])
     scatter!(BETA .- ALPHA, RHO200, label="L=200", ms=3, msw=0)
     leap = zeros(gridsize)
@@ -52,6 +52,7 @@ function V_p_diagram(t0)
     leap[1:mid] .= -0.5 .*p[1:mid] .+ α0
     leap[mid+1:end] .= -0.5 .*p[mid+1:end] .+ (1-α0)
     plot!(p, leap, label="L ⟶ ∞")
+    savefig("plot.pdf")
     #CSV.write("alpha-rho-"*string(gridsize)*".csv",  Tables.table(RHO), writeheader=false)
 end
 
@@ -156,5 +157,6 @@ L = 200
 # determine_current_map(L, t0)
 # small_plot()
 # mean_density(0.2, 0.6, L, t0, 0.9) # (α, β, L, t0, p)
-rholeft_p2(0.5, 0.8, 200, 20_000)
+# rholeft_p2(0.5, 0.8, 200, 20_000)
 # J_p2(0.4, 0.8, 500, 50_000)
+V_p_diagram(100_000)
