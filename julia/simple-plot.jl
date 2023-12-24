@@ -24,25 +24,23 @@ end
 
 # initialize lattice parameters
 # lattice size L, injection rate α, ejection rate β, hop rate p
-t0 = Int(1e5) # one time unit includes L updates of the lattice
+t0 = Int(1e6) # one time unit includes L updates of the lattice
 L = 500
 α = 0.4
 β = 0.8
 p1 = 1
-p2 = 0.25
+p2 = 1
 
 # LD phase
 STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
 densityprofile = vec(mean(STATES, dims=2))
-plot1 = scatter(densityprofile, msw=0, ms=1, 
+plot1 = scatter(densityprofile, msw=0, ms=2, 
     title="a) α=$α, β=$β", titleloc=:left, titlefont=12, 
     label="α=$α, β=$β, d=$p2",  
     ylims=[0, 1],
     ylabel=L"\langle \rho_i \rangle", 
-    xlabel="Lattice site i", legend=false, aspectratio=500)
+    xlabel="Lattice site i")
 y = zeros(L) .+ α/p2
-plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{p_2+1}")
-plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{p_2}{p_2+1}")
 
 savefig("plot.pdf")
 
