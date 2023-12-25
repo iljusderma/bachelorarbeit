@@ -19,8 +19,6 @@ function calc_rho(α, β)
     return ρ
 end
 
-
-
 function rho_p2_diagram(α, β)
     solution = 1000
     RHO = zeros((2,solution))
@@ -32,17 +30,14 @@ function rho_p2_diagram(α, β)
     
     # plot rho(p2)-diagram
     p = plot(P2, RHO[1,:], 
-    xlabel=L"p_2", ylabel=L"\rho", title="α=$α, β=$β", 
-    label=L"\rho^A", 
-    xtickfont=12, ytickfont=12, 
-    guidefont=18, legendfont=18,
-    size=(800, 500))
+    xlabel=L"d", ylabel=L"\rho", title="α=$α, β=$β", 
+    label=L"\rho^A", titleloc=:left, legendfont=14)
     plot!(P2, RHO[2, :], label=L"\rho^B")
     return p
 end
 
 function iterate(α, β, p2)
-    rhoA, rhoB = 0, 0
+    rhoA, rhoB = 1, 1
     # save all values in an array (5 is no possible value -> filter later)
     RHOn = zeros((2, 10_000)).+5
 
@@ -63,5 +58,5 @@ end
 # RHOAn, RHOBn = iterate(0.4, 0.8, 0.6)
 # p = plot(RHOBn[1:10])
 
-p = rho_p2_diagram(0.8, 0.4)
-display("image/png", p)
+p = rho_p2_diagram(0.4, 0.8)
+savefig("plot.pdf")

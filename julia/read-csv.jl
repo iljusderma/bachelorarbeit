@@ -31,11 +31,12 @@ function plot_current_map(path)
         h = heatmap(ALPHA, BETA, FLUX, title= L"Current $J$", 
                 xlabel=L"Exit rate $\beta$", 
                 ylabel=L"Entry rate $\alpha$", 
-                aspectratio=true, xlims=(0,1), dpi=500)
+                aspectratio=true, xlims=(0,1), 
+                legendfont=14)
         contour!(ALPHA, BETA, Z, levels=range(0, p2/(1+p2)^2, 6)[2:end], color=:lightrainbow, lw=3)
         hline!([p2/(1+p2)], ls=:dash, color=:black, label=L"\alpha_c", legend=:topright)
         vline!([p2/(1+p2)], ls=:dash, color=:black, label=L"\beta_c")
-        display("image/png", h)
+        savefig("plot.pdf")
 end
 
 function plot_current_line(path)
@@ -119,59 +120,61 @@ function plot_fs_impurity_MC_current_deviation(path)
         display("image/png", p)
 end
 
-function plot_rholeft_p2(path)
+function plot_rholeft_d(path)
         DATA = CSV.read(path, Tables.matrix, header=0)
         p = scatter(DATA[1, :], (DATA[2, :]),
-                xlabel=L"p_2", 
+                xlabel=L"d", 
                 ylabel=L"|\langle \rho_{left} \rangle - \alpha|",
-                label="α=0.2, β=0.8, L=500", dpi=300)
-        display("image/png", p) # export as png
+                label="α=0.2, β=0.8, L=500",
+                legendfont=14)
+        savefig("plot.pdf")
 end
 
-function plot_critical_p2_fromrholeft(path)
+function plot_critical_d_fromrholeft(path)
         DATA = CSV.read(path, Tables.matrix, header=0)
         A = 0.0:0.05:0.5
-        P2 = DATA[1, :]
-        P2C = zeros(length(A))
+        D = DATA[1, :]
+        D_c = zeros(length(A))
         for (i, LEFT) in enumerate(eachrow(DATA[2:end, :]))
-                P2C[i] = P2[(LEFT .- 0.05) .> 0][end]
+                D_c[i] = D[(LEFT .- 0.05) .> 0][end]
         end
-        p = scatter(A, P2C,
+        p = scatter(A, D_c,
                 xlabel=L"\alpha", 
-                ylabel=L"p_{2,c}",
-                label="β=0.8, L=500", dpi=300)
+                ylabel=L"d_c",
+                label="β=0.8, L=500")
         # linear fit
         @. model(x, par) = par[1]*x
         xdata = A
-        ydata = P2C
+        ydata = D_c
         par0 = [1.0]
         fit = curve_fit(model, xdata, ydata, par0)
         params = @. round(fit.param, digits=2)
 
         # plot fit
         plot!(xdata, model(xdata, params), label=L"Fit with $ax$")
-        display("image/png", p) # export as png
+        savefig("plot.pdf")
 end
 
-function plot_J_p2(path, α, β)
+function plot_J_d(path, α, β)
         DATA = CSV.read(path, Tables.matrix, header=0)
         println(DATA[1,1])
         p = scatter(DATA[1, :] , DATA[2, :],
-                xlabel=L"p_2", 
+                xlabel=L"d", 
                 ylabel=L"J - \frac{1}{4}",
-                label="α=$α, β=$β, L=500", dpi=300)
+                label="α=$α, β=$β, L=500", 
+                legend=:bottomright)
         vline!([α/(1-α)], lw=2, 
-                label=L"p_{2,c}=\frac{\alpha}{1-\alpha}")
+                label=L"$d_c$ = $\frac{\alpha}{1-\alpha}$")
         x = range(0, 1, 1000)
         plot!(x, x ./ (x .+ 1).^2 .- 0.25, 
                 label=L"J_{MC} - 1/4", lw=2)
         plot!(x, zeros(1000) .+ α*(1-α) .- 0.25, 
                 label=L"J_{LD}-1/4", lw=2)
-        display("image/png", p) # export as png
+        savefig("plot.pdf")
 end
 # plot_current_map("current-200-impurity.csv")
-# plot_J_p2("J-p2.csv", 0.4, 0.8)
-# plot_rholeft_p2("rholeft-p2.csv")
-plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
-# plot_critical_p2_fromrholeft("multiple-rholeft-p2.csv")
+# plot_J_d("J-d-0208-500.csv", 0.2, 0.8)
+# plot_rholeft_d("rholeft-d.csv")
+# plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
+plot_critical_d_fromrholeft("multiple-rholeft-d.csv")
 # plot_fs_impurity_MC_density_deviation("fs-impurity-MC-density-deviation.csv")
