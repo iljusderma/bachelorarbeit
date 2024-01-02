@@ -158,4 +158,37 @@ function modified_TASEP_phases(phase)
     savefig("XX-densityprofile.pdf")
 end
 
-modified_TASEP_phases(3)
+function calc_current(alpha, beta, p2)
+    # contourlines
+    current = 0
+    if alpha <= beta && alpha < 0.5
+            current = alpha*(1 - alpha)
+    elseif beta < alpha && beta < 0.5
+            current = beta*(1 - beta)
+    elseif alpha > 0.5 && beta > 0.5
+            current = p2/(1+p2)^2
+    end
+    return current
+end
+
+function plot_current_map_standard(path)
+    FLUX = CSV.read(path, Tables.matrix, header=0)
+    gridsize = size(FLUX)[1]
+    ALPHA, BETA = range(0, 1, gridsize), range(0, 1, gridsize)
+    Z = @. calc_current(ALPHA, BETA', 1)
+    h = heatmap(ALPHA, BETA, FLUX, title= L"Current $J$", 
+            xlabel=L"Exit rate $\beta$", 
+            ylabel=L"Entry rate $\alpha$", 
+            aspectratio=true, xlims=(0,1), 
+            legendfont=14)
+    plot!(range(0.5, 1.0, 10), zeros(10) .+ 0.5, color=:darkgreen, label=false)
+    plot!(zeros(10) .+ 0.5, range(0.5, 1.0, 10), color=:darkgreen, label=false)
+    plot!(range(0, 0.5, 10),range(0, 0.5, 10), color=:darkgreen, label=false)
+    annotate!(0.75, 0.75, ("Maximum current phase", 8, :green, "Helvetica Bold"))
+    annotate!(0.25, 0.65, ("High density phase", 8, :green, "Helvetica Bold"))
+    annotate!(0.75, 0.25, ("Low density phase", 8, :green, "Helvetica Bold"))
+    savefig("plot.pdf")
+end
+
+# modified_TASEP_phases(3)
+plot_current_map_standard("current-200.csv")
