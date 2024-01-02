@@ -190,5 +190,75 @@ function plot_current_map_standard(path)
     savefig("plot.pdf")
 end
 
+function plot_critical_d_fromrholeft(path)
+    DATA = CSV.read(path, Tables.matrix, header=0)
+    A = 0.0:0.05:0.5
+    P2 = DATA[1, :]
+    P2C = zeros(2, length(A))
+    for (i, LEFT) in enumerate(eachrow(DATA[2:end, :]))
+            # heap from the right
+            P2C[1, i] = P2[(LEFT .- 0.03) .< 0][1]
+            # heap from the left
+            P2C[2, i] = P2[(LEFT .- 1 ./ (1 .+ LEFT) .+ 0.2 .+ 0.03) .> 0][end]
+    end
+    xdata = A
+    ydata = vec(mean(P2C, dims=1))
+    yerr = abs.((P2C[1, :] .- P2C[2, :]) ./ 2)
+    p = scatter(xdata, ydata, yerr=yerr, 
+            xlabel=L"\alpha", 
+            ylabel=L"d_c",
+            label="β=0.8, L=200", 
+            legend=:outerright)
+    # linear fit
+    @. model(x, par) = par[1]*x
+    par0 = [1.0]
+    fit = curve_fit(model, xdata[1:7], ydata[1:7], par0)
+    params = @. round(fit.param, digits=2)
+
+    # plot fit
+    plot!(xdata[1:7], model(xdata[1:7], params), label=L"Fit with $ax$")
+    plot!(xdata[7:end], model(xdata[7:end], params), ls=:dash, label=:none)
+    α = 0:0.005:0.5
+    plot!(α, α ./ (1 .- α), label=L"\frac{\alpha}{1-\alpha}")
+
+    # first subplot
+    # histogram!(
+    #     randn(1000),
+    #     inset = (1, bbox(0.05, 0.05, 0.25, 0.25, :top, :left)),
+    #     ticks = nothing,
+    #     subplot = 2,
+    #     bg_inside = nothing)
+    path = "rholeft-d-02.csv"
+    DATA = CSV.read(path, Tables.matrix, header=0)
+    scatter!(DATA[1, :], (DATA[2, :]), msw=0, ms=2,
+            annotation=(0.7, 0.6, ("α=0.2", 10)), 
+            legend=false, 
+            inset = (1, bbox(0.02, 0.02, 0.2, 0.3, :top, :left)),
+            ticks = nothing,
+            subplot = 2,
+            bg_inside = nothing)
+    path = "rholeft-d-03.csv"
+    DATA = CSV.read(path, Tables.matrix, header=0)
+    scatter!(DATA[1, :], (DATA[2, :]), msw=0, ms=2,
+            annotation=(0.7, 0.53, ("α=0.3", 10)), 
+            legend=false, 
+            inset = (1, bbox(0.26, 0.02, 0.2, 0.3, :top)),
+            ticks = nothing,
+            subplot = 3,
+            bg_inside = nothing)
+    path = "rholeft-d-04.csv"
+    DATA = CSV.read(path, Tables.matrix, header=0)
+    scatter!(DATA[1, :], (DATA[2, :]), msw=0, ms=2,
+            annotation=(0.7, 0.47, ("α=0.4", 10)), 
+            legend=false, 
+            inset = (1, bbox(0.5, 0.02, 0.2, 0.3, :top)),
+            ticks = nothing,
+            subplot = 4,
+            bg_inside = nothing)
+
+    savefig("plot.pdf")
+end
+
 # modified_TASEP_phases(3)
-plot_current_map_standard("current-200.csv")
+# plot_current_map_standard("current-200.csv")
+# plot_critical_d_fromrholeft("multiple-rholeft-d.csv")

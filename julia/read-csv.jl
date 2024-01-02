@@ -89,7 +89,7 @@ function plot_fs_impurity_MC_density_deviation(path)
         p = scatter((DATA[1, :]) , DATA[2, :], 
                 ylims=(0, 0.06), xlabel=L"L",
                 ylabel=L"\rho_{left, approx} - \langle \rho_{left} \rangle", 
-                label="α=0.8, β=0.8, p2=0.3", dpi=300)
+                label="α=0.8, β=0.8, d=0.3")
         deviation = mean(DATA[2, :])
         deviation_err = std(DATA[2, :])/sqrt(length(DATA[2, :]))
         println(deviation, deviation_err)
@@ -124,33 +124,41 @@ function plot_rholeft_d(path)
         p = scatter(DATA[1, :], (DATA[2, :]),
                 xlabel=L"d", 
                 ylabel=L"|\langle \rho_{left} \rangle - \alpha|",
-                label="α=0.2, β=0.8, L=500",
-                legendfont=14)
+                label="α=0.2, β=0.8, L=200",
+                legendfont=18)
         savefig("plot.pdf")
 end
 
 function plot_critical_d_fromrholeft(path)
         DATA = CSV.read(path, Tables.matrix, header=0)
         A = 0.0:0.05:0.5
-        D = DATA[1, :]
-        D_c = zeros(length(A))
+        P2 = DATA[1, :]
+        P2C = zeros(2, length(A))
         for (i, LEFT) in enumerate(eachrow(DATA[2:end, :]))
-                D_c[i] = D[(LEFT .- 0.05) .> 0][end]
+                # heap from the right
+                P2C[1, i] = P2[(LEFT .- 0.03) .< 0][1]
+                # heap from the left
+                P2C[2, i] = P2[(LEFT .- 1 ./ (1 .+ LEFT) .+ 0.2 .+ 0.03) .> 0][end]
         end
-        p = scatter(A, D_c,
+        xdata = A
+        ydata = vec(mean(P2C, dims=1))
+        yerr = abs.((P2C[1, :] .- P2C[2, :]) ./ 2)
+        p = scatter(xdata, ydata, yerr=yerr, 
                 xlabel=L"\alpha", 
                 ylabel=L"d_c",
-                label="β=0.8, L=500")
+                label="β=0.8, L=500", 
+                legend=:outerright)
         # linear fit
         @. model(x, par) = par[1]*x
-        xdata = A
-        ydata = D_c
         par0 = [1.0]
-        fit = curve_fit(model, xdata, ydata, par0)
+        fit = curve_fit(model, xdata[1:7], ydata[1:7], par0)
         params = @. round(fit.param, digits=2)
 
         # plot fit
-        plot!(xdata, model(xdata, params), label=L"Fit with $ax$")
+        plot!(xdata[1:7], model(xdata[1:7], params), label=L"Fit with $ax$")
+        plot!(xdata[7:end], model(xdata[7:end], params), ls=:dash, label=:none)
+        α = 0:0.005:0.5
+        plot!(α, α ./ (1 .- α), label=L"\frac{\alpha}{1-\alpha}")
         savefig("plot.pdf")
 end
 
@@ -173,7 +181,7 @@ function plot_J_d(path, α, β)
 end
 # plot_current_map("current-200-impurity.csv")
 # plot_J_d("J-d-0208-500.csv", 0.2, 0.8)
-# plot_rholeft_d("rholeft-d.csv")
-plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
+# plot_rholeft_d("rholeft-d-04.csv")
+# plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
 # plot_critical_d_fromrholeft("multiple-rholeft-d.csv")
-# plot_fs_impurity_MC_density_deviation("fs-impurity-MC-density-deviation.csv")
+plot_fs_impurity_MC_density_deviation("fs-impurity-MC-density-deviation.csv")
