@@ -87,15 +87,14 @@ end
 function plot_fs_impurity_MC_density_deviation(path)
         DATA = CSV.read(path, Tables.matrix, header=0)
         p = scatter((DATA[1, :]) , DATA[2, :], 
-                ylims=(0, 0.06),
-                title="Deviation in MC phase L→∞", xlabel=L"L",
+                ylims=(0, 0.06), xlabel=L"L",
                 ylabel=L"\rho_{left, approx} - \langle \rho_{left} \rangle", 
                 label="α=0.8, β=0.8, p2=0.3", dpi=300)
         deviation = mean(DATA[2, :])
         deviation_err = std(DATA[2, :])/sqrt(length(DATA[2, :]))
         println(deviation, deviation_err)
         hline!([deviation], yerr=[deviation_err], label="average")
-        display("image/pdf", p)
+        savefig("plot.pdf")
 end
 
 function plot_fs_impurity_MC_current_deviation(path)
@@ -117,7 +116,7 @@ function plot_fs_impurity_MC_current_deviation(path)
         
         # plot fit
         plot!(xdata, model(xdata, params), label=L"Fit with $ax^{-1}$")
-        display("image/png", p)
+        savefig("plot.pdf")
 end
 
 function plot_rholeft_d(path)
@@ -175,6 +174,6 @@ end
 # plot_current_map("current-200-impurity.csv")
 # plot_J_d("J-d-0208-500.csv", 0.2, 0.8)
 # plot_rholeft_d("rholeft-d.csv")
-# plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
-plot_critical_d_fromrholeft("multiple-rholeft-d.csv")
+plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
+# plot_critical_d_fromrholeft("multiple-rholeft-d.csv")
 # plot_fs_impurity_MC_density_deviation("fs-impurity-MC-density-deviation.csv")
