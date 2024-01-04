@@ -169,7 +169,7 @@ function plot_J_d(path, α, β)
                 xlabel=L"d", 
                 ylabel=L"J - \frac{1}{4}",
                 label="α=$α, β=$β, L=500", 
-                legend=:bottomright)
+                legend=:bottomright, legendfont=12)
         vline!([α/(1-α)], lw=2, 
                 label=L"$d_c$ = $\frac{\alpha}{1-\alpha}$")
         x = range(0, 1, 1000)
@@ -180,8 +180,8 @@ function plot_J_d(path, α, β)
         savefig("plot.pdf")
 end
 # plot_current_map("current-200-impurity.csv")
-# plot_J_d("J-d-0208-500.csv", 0.2, 0.8)
+plot_J_d("J-d-0208-500.csv", 0.2, 0.8)
 # plot_rholeft_d("rholeft-d-04.csv")
 # plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
 # plot_critical_d_fromrholeft("multiple-rholeft-d.csv")
-plot_fs_impurity_MC_density_deviation("fs-impurity-MC-density-deviation.csv")
+# plot_fs_impurity_MC_density_deviation("fs-impurity-MC-density-deviation.csv")

@@ -39,14 +39,14 @@ function V_p_diagram(t0)
     gridsize = 50
     α0 = 0.1
     ALPHA = range(0, 2*α0, gridsize)
-    BETA = .- ALPHA .+ 2*α0  # apply shock at alpha = beta = 0.3
+    BETA = .- ALPHA .+ 2*α0  # apply shock at alpha = beta = α0
     RHO10 = calc_V_p_curve(ALPHA, BETA, gridsize, t0, 10)
     RHO200 = calc_V_p_curve(ALPHA, BETA, gridsize, t0, 200)
     p = BETA .- ALPHA
-    scatter(BETA .- ALPHA, RHO10, label="L=10", 
+    scatter(p, RHO10, label="L=10", 
     title="V(p)-diagram", xlabel="p", ylabel="V", ms=3, 
     msw=0, ylims=[0, 1])
-    scatter!(BETA .- ALPHA, RHO200, label="L=200", ms=3, msw=0)
+    scatter!(p, RHO200, label="L=200", ms=3, msw=0)
     leap = zeros(gridsize)
     mid = Int(floor(gridsize*0.5))
     leap[1:mid] .= -0.5 .*p[1:mid] .+ α0
@@ -56,6 +56,27 @@ function V_p_diagram(t0)
     #CSV.write("alpha-rho-"*string(gridsize)*".csv",  Tables.table(RHO), writeheader=false)
 end
 
+function V_p_diagram_secondorder(t0)
+    gridsize = 50
+    β0 = 0.7
+    ALPHA = range(0.2, 0.8, gridsize)
+    BETA = zeros(gridsize) .+ β0  # apply shock at alpha = beta = α0
+    RHO10 = calc_V_p_curve(ALPHA, BETA, gridsize, t0, 10)
+    RHO500 = calc_V_p_curve(ALPHA, BETA, gridsize, t0, 500)
+    p = BETA .- ALPHA
+    scatter(p, RHO10, label="L=10", 
+    title="V(p)-diagram", xlabel="p", ylabel="V", ms=3, 
+    msw=0, ylims=[0, 1])
+    scatter!(p, RHO500, label="L=200", ms=3, msw=0)
+    gridsize = gridsize
+    leap = zeros(gridsize)
+    mid = Int(floor(gridsize*0.5))
+    leap[1:mid] .= .-(.-p[mid+1:end] .+ β0) # irgendwas stimmt hier noch nicht, darstellung über -p?
+    leap[mid+1:end] .= 0.5
+    plot!(p, leap, label="L ⟶ ∞")
+    savefig("plot.pdf")
+    #CSV.write("alpha-rho-"*string(gridsize)*".csv",  Tables.table(RHO), writeheader=false)
+end
 function mean_density(α, β, L, t0, p)
     nos = 500 # Nos: number of simulations
     @time begin
@@ -132,20 +153,42 @@ function rholeft_p2(α, β, L, t0)
     display("image/png", p) # export as png
 end
 
-function J_p2(α, β, L, t0)
+function rhoright_d(α, β, L, t0)
+    # plot rho_leftbulk over p2 to 
     # find critical p_2 describing a phase transition
     n = 100
-    P2 = range(0, 1, n)
+    D = range(0, 1, n)
+    RHOright = zeros(n)
+    for (i, d) in enumerate(D)
+        STATES, CURRENT = simulate(α, β, L, t0, 1, d)
+        cut_STATES = STATES[:, 3_000:end]
+        densityprofile = vec(mean(cut_STATES, dims=2))
+        RHOright[i] = abs(α - mean(densityprofile[round(Int, 5/8*L):round(Int, 7/8*L)]))
+        println(d)
+    end
+    DATA = [vec(D)'; vec(RHOright)']
+    CSV.write("RHOright-d.csv",  Tables.table(DATA), writeheader=false)
+    p = scatter(D, RHOright, 
+        xlabel=L"d", 
+        ylabel=L"\langle \rho_{right} \rangle - α",
+        label="α=$α, β=$β, L=$L")
+    savefig("plot.pdf")
+end
+
+function J_d(α, β, L, t0)
+    # find critical p_2 describing a phase transition
+    n = 100
+    D = range(0, 1, n)
     J = zeros(n)
-    for (i, p2) in enumerate(P2)
-        STATES, CURRENT = simulate(α, β, L, t0, 1, p2)
+    for (i, d) in enumerate(D)
+        STATES, CURRENT = simulate(α, β, L, t0, 1, D)
         J[i] = mean(CURRENT) - 0.25
         println(p2)
     end
     DATA = [vec(P2)'; vec(J)']
-    CSV.write("J-p2.csv",  Tables.table(DATA), writeheader=false)
-    p = scatter(P2, J, 
-        xlabel=L"p_2", 
+    CSV.write("J-d.csv",  Tables.table(DATA), writeheader=false)
+    p = scatter(D, J, 
+        xlabel=L"d", 
         ylabel=L"J - \frac{1}{4}",
         label="α=$α, β=$β, L=$L")
     display("image/png", p) # export as png
@@ -157,6 +200,8 @@ L = 200
 # determine_current_map(L, t0)
 # small_plot()
 # mean_density(0.2, 0.6, L, t0, 0.9) # (α, β, L, t0, p)
-rholeft_p2(0.3, 0.8, 200, 20_000)
-# J_p2(0.4, 0.8, 500, 50_000)
+# rholeft_p2(0.3, 0.8, 200, 20_000)
+# rhoright_d(0.3, 0.8, 200, 20_000)
+# J_d(0.4, 0.8, 500, 50_000)
 # V_p_diagram(100_000)
+V_p_diagram_secondorder(100_000)
