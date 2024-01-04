@@ -21,9 +21,10 @@ end
 function calc_V_p_curve(ALPHA, BETA, gridsize, t0, L)
     # phase transition
     RHO = zeros(gridsize)
+    println("start")
     for i in 1:gridsize
-        if (i)%10 == 0
-            println(round(i/gridsize^2*100), "%")
+        if i%5 ==0
+            println(round(i/gridsize*100), "%")
         end
         # index to row x column
         α = ALPHA[i]
@@ -35,48 +36,49 @@ function calc_V_p_curve(ALPHA, BETA, gridsize, t0, L)
     return RHO
 end
 
-function V_p_diagram(t0)
+function V_p_1order(t0)
     gridsize = 50
     α0 = 0.1
     ALPHA = range(0, 2*α0, gridsize)
     BETA = .- ALPHA .+ 2*α0  # apply shock at alpha = beta = α0
     RHO10 = calc_V_p_curve(ALPHA, BETA, gridsize, t0, 10)
-    RHO200 = calc_V_p_curve(ALPHA, BETA, gridsize, t0, 200)
+    RHO500 = calc_V_p_curve(ALPHA, BETA, gridsize, t0, 500)
     p = BETA .- ALPHA
     scatter(p, RHO10, label="L=10", 
-    title="V(p)-diagram", xlabel="p", ylabel="V", ms=3, 
+    xlabel=L"p", ylabel=L"V", ms=3, 
     msw=0, ylims=[0, 1])
-    scatter!(p, RHO200, label="L=200", ms=3, msw=0)
+    scatter!(p, RHO500, label="L=500", ms=3, msw=0)
     leap = zeros(gridsize)
     mid = Int(floor(gridsize*0.5))
     leap[1:mid] .= -0.5 .*p[1:mid] .+ α0
     leap[mid+1:end] .= -0.5 .*p[mid+1:end] .+ (1-α0)
     plot!(p, leap, label="L ⟶ ∞")
     savefig("plot.pdf")
-    #CSV.write("alpha-rho-"*string(gridsize)*".csv",  Tables.table(RHO), writeheader=false)
+    CSV.write("V-p-1order.csv",  Tables.table([p, RHO10, RHO500]), writeheader=false)
 end
 
-function V_p_diagram_secondorder(t0)
+function V_p_2order(t0)
     gridsize = 50
-    β0 = 0.7
-    ALPHA = range(0.2, 0.8, gridsize)
-    BETA = zeros(gridsize) .+ β0  # apply shock at alpha = beta = α0
+    α0 = 0.7
+    ALPHA = zeros(gridsize) .+ α0
+    BETA = range(0.2, 0.8, gridsize) # apply transition at β=0.5
     RHO10 = calc_V_p_curve(ALPHA, BETA, gridsize, t0, 10)
     RHO500 = calc_V_p_curve(ALPHA, BETA, gridsize, t0, 500)
     p = BETA .- ALPHA
     scatter(p, RHO10, label="L=10", 
-    title="V(p)-diagram", xlabel="p", ylabel="V", ms=3, 
+    xlabel=L"p", ylabel=L"V", 
     msw=0, ylims=[0, 1])
-    scatter!(p, RHO500, label="L=200", ms=3, msw=0)
-    gridsize = gridsize
-    leap = zeros(gridsize)
-    mid = Int(floor(gridsize*0.5))
-    leap[1:mid] .= .-(.-p[mid+1:end] .+ β0) # irgendwas stimmt hier noch nicht, darstellung über -p?
-    leap[mid+1:end] .= 0.5
-    plot!(p, leap, label="L ⟶ ∞")
+    scatter!(p, RHO500, label="L=500", ms=3, msw=0)
+    # draw limit L → ∞
+    y = zeros(gridsize)
+    mid = Int(floor(0.5*length(y)))
+    y[1:mid] .= 1 .- (p[1:mid] .+ α0) # ∼1-β
+    y[mid+1:end] .= 0.5
+    plot!(p, y, label="L ⟶ ∞")
     savefig("plot.pdf")
-    #CSV.write("alpha-rho-"*string(gridsize)*".csv",  Tables.table(RHO), writeheader=false)
+    CSV.write("V-p-2order.csv",  Tables.table([p, RHO10, RHO500]), writeheader=false)
 end
+
 function mean_density(α, β, L, t0, p)
     nos = 500 # Nos: number of simulations
     @time begin
@@ -203,5 +205,5 @@ L = 200
 # rholeft_p2(0.3, 0.8, 200, 20_000)
 # rhoright_d(0.3, 0.8, 200, 20_000)
 # J_d(0.4, 0.8, 500, 50_000)
-# V_p_diagram(100_000)
-V_p_diagram_secondorder(100_000)
+# V_p_1order(100_000)
+V_p_2order(100_000)

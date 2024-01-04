@@ -119,6 +119,29 @@ function plot_fs_impurity_MC_current_deviation(path)
         savefig("plot.pdf")
 end
 
+function plot_V_p(path, transition)
+        p, RHO10, RHO500 = CSV.read(path, Tables.matrix, header=0)
+        gridsize = length(p)
+        scatter(p, RHO10, label="L=10", 
+                xlabel=L"p", ylabel=L"V", 
+                msw=0, ylims=[0, 1])
+        scatter!(p, RHO500, label="L=500", msw=0)
+        # draw limit L → ∞
+        y = zeros(gridsize)
+        if transition == 1
+                α0 = 0.1
+                mid = Int(floor(0.5*length(y)))
+                y[1:mid] .= -0.5 .*p[1:mid] .+ α0
+                y[mid+1:end] .= -0.5 .*p[mid+1:end] .+ (1-α0)
+        else
+                mid = Int(floor(0.5*length(y)))
+                y[1:mid] .= 1 .- (p[1:mid] .+ ALPHA[1:mid]) # ∼1-β
+                y[mid+1:end] .= 0.5
+        end
+        plot!(p, y, label="L ⟶ ∞")
+        savefig("plot.pdf")
+end
+
 function plot_rholeft_d(path)
         DATA = CSV.read(path, Tables.matrix, header=0)
         p = scatter(DATA[1, :], (DATA[2, :]),
@@ -180,7 +203,8 @@ function plot_J_d(path, α, β)
         savefig("plot.pdf")
 end
 # plot_current_map("current-200-impurity.csv")
-plot_J_d("J-d-0208-500.csv", 0.2, 0.8)
+plot_V_p("V-p-1order.csv", 1)
+# plot_J_d("J-d-0208-500.csv", 0.2, 0.8)
 # plot_rholeft_d("rholeft-d-04.csv")
 # plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
 # plot_critical_d_fromrholeft("multiple-rholeft-d.csv")
