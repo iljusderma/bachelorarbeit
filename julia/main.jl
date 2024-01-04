@@ -42,6 +42,7 @@ function simulate(α, β, L, t0, p1=1, p2=1)
     # initialize state
     state = initialize_state(L)
     # save state history in all_states every n-th time step
+    # for current measurement t0/1000
     n = Int(round(t0/t0))
     STATES = BitArray(undef, (L, Int(round(t0/n))))
     # insert Current measurement
