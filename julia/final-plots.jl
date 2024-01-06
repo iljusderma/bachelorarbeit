@@ -1,5 +1,5 @@
 include("main.jl")
-using PlotThemes, CSV, Tables
+using PlotThemes, CSV, Tables, Measures
 
 function TASEP_phases()
     # initialize lattice parameters
@@ -10,7 +10,6 @@ function TASEP_phases()
     β = 0.8
     p1 = 1
     p2 = 1
-
     # perform update
     @time begin
     STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
@@ -67,13 +66,6 @@ function TASEP_phases()
         ylims=[0, 1], titlefont=12, 
         ylabel=L"\langle \rho_i \rangle", 
         xlabel="Lattice site i", legend=false)
-
-
-    #animate(500, t0, STATES, α, β, p1)
-
-    #plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{p_2+1}")
-    #plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{p_2}{p_2+1}")
-    #println(mean(CURRENT))
     plot(plot1, plot2, plot3, plot4, layout = 4)
     savefig("plot.pdf")
 end
@@ -176,17 +168,19 @@ function plot_current_map_standard(path)
     gridsize = size(FLUX)[1]
     ALPHA, BETA = range(0, 1, gridsize), range(0, 1, gridsize)
     Z = @. calc_current(ALPHA, BETA', 1)
-    h = heatmap(ALPHA, BETA, FLUX, title= L"Current $J$", 
-            xlabel=L"Exit rate $\beta$", 
-            ylabel=L"Entry rate $\alpha$", 
-            aspectratio=true, xlims=(0,1), 
-            legendfont=14)
+    h = heatmap(ALPHA, BETA, FLUX, 
+        top_margin=7mm, 
+        xlabel=L"Exit rate $\beta$", 
+        ylabel=L"Entry rate $\alpha$", 
+        aspectratio=true, xlims=(0,1), 
+        legendfont=14)
     plot!(range(0.5, 1.0, 10), zeros(10) .+ 0.5, color=:darkgreen, label=false)
     plot!(zeros(10) .+ 0.5, range(0.5, 1.0, 10), color=:darkgreen, label=false)
     plot!(range(0, 0.5, 10),range(0, 0.5, 10), color=:darkgreen, label=false)
-    annotate!(0.75, 0.75, ("Maximum current phase", 8, :green, "Helvetica Bold"))
-    annotate!(0.25, 0.65, ("High density phase", 8, :green, "Helvetica Bold"))
-    annotate!(0.75, 0.25, ("Low density phase", 8, :green, "Helvetica Bold"))
+    annotate!(0.75, 0.7, ("Maximum current \n phase", 8, :green, "Helvetica Bold"))
+    annotate!(0.32, 0.6, ("High density \n phase", 8, :green, "Helvetica Bold"))
+    annotate!(0.7, 0.35, ("Low density \n phase", 8, :green, "Helvetica Bold"))
+    annotate!(1.1, 1.1, (L"Current $J$", 12))
     savefig("plot.pdf")
 end
 
@@ -259,6 +253,37 @@ function plot_critical_d_fromrholeft(path)
     savefig("plot.pdf")
 end
 
+function  plot_STATESMAP()
+    t0 = Int(5*1e3) # one time unit includes L updates of the lattice
+    L = 300
+    α = 0.3
+    β = 0.3
+    p1 = 1
+    p2 = 1
+
+    # LD phase
+    STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
+    heatmap(STATES', c=:grays, 
+        title="α=$α, β=$α", titleloc=:left, 
+        xlabel=L"Lattice site $i$",
+        ylabel=L"Time $t$", legend=false, 
+        cbar=false, rightmargin=5mm, 
+        legend_font=14)
+    # x = [0,  , NaN, 0.5, 1.0]
+    # y = [1, 0.4,  NaN, 1.5, 0.8]
+    # GR.setarrowsize(1)
+    GR.setarrowsize(2)
+    plot!([305,50], [4600,2500], lw=3, arrow = (:closed, 2.0), label="(a)")
+    annotate!(315,4700, "(a)")
+    plot!([305,250], [4200,3000], lw=3, arrow = (:closed, 2.0), label="(b)")
+    annotate!(315,4300, "(b)")
+    plot!([305,150], [3800,200], lw=3, arrow = (:closed, 2.0), label="(c)")
+    annotate!(315,3900, "(c)")
+    savefig("plot.pdf")
+    
+end
+
 # modified_TASEP_phases(3)
 # plot_current_map_standard("current-200.csv")
 # plot_critical_d_fromrholeft("multiple-rholeft-d.csv")
+plot_STATESMAP()
