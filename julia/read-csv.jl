@@ -28,7 +28,8 @@ function plot_current_map(path)
         gridsize = size(FLUX)[1]
         ALPHA, BETA = range(0, 1, gridsize), range(0, 1, gridsize)
         Z = @. calc_current(ALPHA, BETA', p2)
-        h = heatmap(ALPHA, BETA, FLUX, title= L"Current $J$", 
+        h = heatmap(ALPHA, BETA, FLUX, 
+                topmargin=7mm, 
                 xlabel=L"Exit rate $\beta$", 
                 ylabel=L"Entry rate $\alpha$", 
                 aspectratio=true, xlims=(0,1), 
@@ -36,6 +37,7 @@ function plot_current_map(path)
         contour!(ALPHA, BETA, Z, levels=range(0, p2/(1+p2)^2, 6)[2:end], color=:lightrainbow, lw=3)
         hline!([p2/(1+p2)], ls=:dash, color=:black, label=L"\alpha_c", legend=:topright)
         vline!([p2/(1+p2)], ls=:dash, color=:black, label=L"\beta_c")
+        annotate!(1.1, 1.05, (L"Current $J$", 11))
         savefig("plot.pdf")
 end
 
@@ -202,8 +204,8 @@ function plot_J_d(path, α, β)
                 label=L"J_{LD}-1/4", lw=2)
         savefig("plot.pdf")
 end
-# plot_current_map("current-200-impurity.csv")
-plot_V_p("V-p-1order.csv", 1)
+plot_current_map("current-200-impurity.csv")
+# plot_V_p("V-p-1order.csv", 1)
 # plot_J_d("J-d-0208-500.csv", 0.2, 0.8)
 # plot_rholeft_d("rholeft-d-04.csv")
 # plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
