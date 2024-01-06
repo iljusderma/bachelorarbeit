@@ -177,7 +177,7 @@ function plot_current_map_standard(path)
     ALPHA, BETA = range(0, 1, gridsize), range(0, 1, gridsize)
     Z = @. calc_current(ALPHA, BETA', 1)
     h = heatmap(ALPHA, BETA, FLUX, 
-        topmargin=7mm, 
+        top_margin=7mm, 
         xlabel=L"Exit rate $\beta$", 
         ylabel=L"Entry rate $\alpha$", 
         aspectratio=true, xlims=(0,1), 
@@ -185,9 +185,9 @@ function plot_current_map_standard(path)
     plot!(range(0.5, 1.0, 10), zeros(10) .+ 0.5, color=:darkgreen, label=false)
     plot!(zeros(10) .+ 0.5, range(0.5, 1.0, 10), color=:darkgreen, label=false)
     plot!(range(0, 0.5, 10),range(0, 0.5, 10), color=:darkgreen, label=false)
-    annotate!(0.75, 0.75, ("Maximum current phase", 8, :green, "Helvetica Bold"))
-    annotate!(0.25, 0.65, ("High density phase", 8, :green, "Helvetica Bold"))
-    annotate!(0.75, 0.25, ("Low density phase", 8, :green, "Helvetica Bold"))
+    annotate!(0.75, 0.7, ("Maximum current \n phase", 8, :green, "Helvetica Bold"))
+    annotate!(0.32, 0.6, ("High density \n phase", 8, :green, "Helvetica Bold"))
+    annotate!(0.7, 0.35, ("Low density \n phase", 8, :green, "Helvetica Bold"))
     annotate!(1.1, 1.1, (L"Current $J$", 12))
     savefig("plot.pdf")
 end
