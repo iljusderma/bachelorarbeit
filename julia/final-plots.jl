@@ -97,7 +97,7 @@ function modified_TASEP_phases(phase)
         label=L"$d$ = $0.25$",  
         ylims=[0, 1],
         ylabel=L"\langle \rho_i \rangle", 
-        xlabel=L"Lattice site $i$", legend=:outerright) #aspectratio=500)
+        xlabel=L"Lattice site $i$", legend=:outerright, legendfont=12)
     y = zeros(L) .+ α/p2
     plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{d+1}")
     plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{d}{d+1}")
@@ -120,7 +120,7 @@ function modified_TASEP_phases(phase)
         title="α=$α, β=$β", titleloc=:left, titlefont=12, 
         ylims=[0, 1],
         ylabel=L"\langle \rho_i \rangle", 
-        xlabel=L"Lattice site $i$", legend=:outerright)
+        xlabel=L"Lattice site $i$", legend=:outerright, legendfont=12)
     plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{d+1}")
     plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{d}{d+1}")
     p2=0.85
@@ -143,7 +143,7 @@ function modified_TASEP_phases(phase)
         title="α=$α, β=$β", titleloc=:left, titlefont=12, 
         ylims=[0, 1],
         ylabel=L"\langle \rho_i \rangle", 
-        xlabel=L"Lattice site $i$", legend=:outerright)
+        xlabel=L"Lattice site $i$", legend=:outerright, legendfont=12)
     y = zeros(L) .+ (1-β/p2)
     plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{d+1}")
     plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{d}{d+1}")
@@ -259,6 +259,36 @@ function plot_critical_d_fromrholeft(path)
     savefig("plot.pdf")
 end
 
-# modified_TASEP_phases(3)
-# plot_current_map_standard("current-200.csv")
+function plot_STATESMAP()
+    t0 = Int(5*1e3) # one time unit includes L updates of the lattice
+    L = 300
+    α = 0.3
+    β = 0.3
+    p1 = 1
+    p2 = 1
+
+    # LD phase
+    STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
+    heatmap(STATES', c=:grays, 
+        title="α=$α, β=$α", titleloc=:left, 
+        xlabel=L"Lattice site $i$",
+        ylabel=L"Time $t$", legend=false, 
+        cbar=false, rightmargin=5mm, 
+        legend_font=14)
+    # x = [0,  , NaN, 0.5, 1.0]
+    # y = [1, 0.4,  NaN, 1.5, 0.8]
+    # GR.setarrowsize(1)
+    GR.setarrowsize(2)
+    plot!([305,50], [4600,2500], lw=3, arrow = (:closed, 2.0), label="(a)")
+    annotate!(315,4700, "(a)")
+    plot!([305,250], [4200,3000], lw=3, arrow = (:closed, 2.0), label="(b)")
+    annotate!(315,4300, "(b)")
+    plot!([305,150], [3800,200], lw=3, arrow = (:closed, 2.0), label="(c)")
+    annotate!(315,3900, "(c)")
+    savefig("plot.pdf")
+end
+
+# modified_TASEP_phases(1)
+plot_current_map_standard("current-200.csv")
 # plot_critical_d_fromrholeft("multiple-rholeft-d.csv")
+# plot_STATESMAP()

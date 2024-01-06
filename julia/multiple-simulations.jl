@@ -45,14 +45,16 @@ function V_p_1order(t0)
     RHO500 = calc_V_p_curve(ALPHA, BETA, gridsize, t0, 500)
     p = BETA .- ALPHA
     scatter(p, RHO10, label="L=10", 
-    xlabel=L"p", ylabel=L"V", ms=3, 
-    msw=0, ylims=[0, 1])
+        xlabel=L"p", ylabel=L"V", ms=3, 
+        msw=0, ylims=[0, 1], legend_font=12)
     scatter!(p, RHO500, label="L=500", ms=3, msw=0)
     leap = zeros(gridsize)
     mid = Int(floor(gridsize*0.5))
     leap[1:mid] .= -0.5 .*p[1:mid] .+ α0
     leap[mid+1:end] .= -0.5 .*p[mid+1:end] .+ (1-α0)
-    plot!(p, leap, label="L ⟶ ∞")
+    plot!(p[1:25], leap[1:25], lw=2, label="L ⟶ ∞")
+    plot!(p[25:26], leap[25:26], linestyle=:dash, lw=2, label=false, color=palette(:default)[3])
+    plot!(p[26:50], leap[26:50], lw=2, label=false, color=palette(:default)[3])
     savefig("plot.pdf")
     CSV.write("V-p-1order.csv",  Tables.table([p, RHO10, RHO500]), writeheader=false)
 end
@@ -206,4 +208,4 @@ L = 200
 # rhoright_d(0.3, 0.8, 200, 20_000)
 # J_d(0.4, 0.8, 500, 50_000)
 # V_p_1order(100_000)
-V_p_2order(100_000)
+V_p_1order(50_000)
