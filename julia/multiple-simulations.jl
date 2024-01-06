@@ -68,15 +68,15 @@ function V_p_2order(t0)
     RHO500 = calc_V_p_curve(ALPHA, BETA, gridsize, t0, 500)
     p = BETA .- ALPHA
     scatter(p, RHO10, label="L=10", 
-    xlabel=L"p", ylabel=L"V", 
-    msw=0, ylims=[0, 1])
+        xlabel=L"p", ylabel=L"V", 
+        msw=0, ylims=[0, 1], legendfont=12)
     scatter!(p, RHO500, label="L=500", ms=3, msw=0)
     # draw limit L → ∞
     y = zeros(gridsize)
     mid = Int(floor(0.5*length(y)))
     y[1:mid] .= 1 .- (p[1:mid] .+ α0) # ∼1-β
     y[mid+1:end] .= 0.5
-    plot!(p, y, label="L ⟶ ∞")
+    plot!(p, y, label="L ⟶ ∞", lw=2)
     savefig("plot.pdf")
     CSV.write("V-p-2order.csv",  Tables.table([p, RHO10, RHO500]), writeheader=false)
 end
@@ -207,5 +207,5 @@ L = 200
 # rholeft_p2(0.3, 0.8, 200, 20_000)
 # rhoright_d(0.3, 0.8, 200, 20_000)
 # J_d(0.4, 0.8, 500, 50_000)
-# V_p_1order(100_000)
-V_p_1order(50_000)
+# V_p_1order(50_000)
+V_p_2order(100_000)
