@@ -99,14 +99,14 @@ function modified_TASEP_phases(phase)
         ylabel=L"\langle \rho_i \rangle", 
         xlabel=L"Lattice site $i$", legend=:outerright, legendfont=12)
     y = zeros(L) .+ α/p2
-    plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{d+1}")
-    plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{d}{d+1}")
+    plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{d+1}", lw=2)
+    plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{d}{d+1}", lw=2)
     p2 = 0.85
     STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
     densityprofile = vec(mean(STATES, dims=2))
     scatter!(densityprofile, msw=0, ms=2,  
         label=L"$d$ = $0.85$")
-    hline!([α/p2], ls=:dash, label=L"\frac{\alpha}{d}")
+    hline!([α/p2], ls=:dash, label=L"\frac{\alpha}{d}", lw=2)
     end
 
     if phase==2
@@ -121,15 +121,15 @@ function modified_TASEP_phases(phase)
         ylims=[0, 1],
         ylabel=L"\langle \rho_i \rangle", 
         xlabel=L"Lattice site $i$", legend=:outerright, legendfont=12)
-    plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{d+1}")
-    plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{d}{d+1}")
+    plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{d+1}", lw=2)
+    plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{d}{d+1}", lw=2)
     p2=0.85
     STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
     densityprofile = vec(mean(STATES, dims=2))
     scatter!(densityprofile, msw=0, ms=2,  
         label=L"$d$ = $0.85$")
-    plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=false, color=palette(:default)[2])
-    plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=false, color=palette(:default)[3])
+    plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=false, color=palette(:default)[2], lw=2)
+    plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=false, color=palette(:default)[3], lw=2)
     end
     
     if phase==3
@@ -145,14 +145,14 @@ function modified_TASEP_phases(phase)
         ylabel=L"\langle \rho_i \rangle", 
         xlabel=L"Lattice site $i$", legend=:outerright, legendfont=12)
     y = zeros(L) .+ (1-β/p2)
-    plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{d+1}")
-    plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{d}{d+1}")
+    plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{d+1}", lw=2)
+    plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{d}{d+1}", lw=2)
     p2 = 0.85
     STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
     densityprofile = vec(mean(STATES, dims=2))
     scatter!(densityprofile, msw=0, ms=2,  
         label=L"$d$ = $0.85$")
-    hline!([1-β/p2], ls=:dash, label=L"1-\frac{\beta}{d}")
+    hline!([1-β/p2], ls=:dash, label=L"1-\frac{\beta}{d}", lw=2)
     end
     # plot(plot1, plot2, plot3, layout=(1, 3), size=(600,210))
     savefig("XX-densityprofile.pdf")
@@ -270,29 +270,22 @@ function plot_STATESMAP()
     β = 0.3
     p1 = 1
     p2 = 1
-
     # LD phase
     STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
-    heatmap(STATES', c=:grays, 
+    heatmap(STATES', 
         title="α=$α, β=$α", titleloc=:left, 
         xlabel=L"Lattice site $i$",
         ylabel=L"Time $t$", legend=false, 
-        cbar=false, rightmargin=5mm, 
-        legend_font=14)
-    # x = [0,  , NaN, 0.5, 1.0]
-    # y = [1, 0.4,  NaN, 1.5, 0.8]
-    # GR.setarrowsize(1)
-    GR.setarrowsize(2)
-    plot!([305,50], [4600,2500], lw=3, arrow = (:closed, 2.0), label="(a)")
-    annotate!(315,4700, "(a)")
-    plot!([305,250], [4200,3000], lw=3, arrow = (:closed, 2.0), label="(b)")
-    annotate!(315,4300, "(b)")
-    plot!([305,150], [3800,200], lw=3, arrow = (:closed, 2.0), label="(c)")
-    annotate!(315,3900, "(c)")
+        cbar=false)
+    scatter!([50, 250, 150], [2500, 3000, 300], color=:white,
+        ms=18)
+    annotate!(50,2500, "(a)")
+    annotate!(250,3000, "(b)")
+    annotate!(150,300, "(c)")
     savefig("plot.pdf")
 end
 
-# modified_TASEP_phases(1)
+# modified_TASEP_phases(3)
 # plot_current_map_standard("current-200.csv")
-plot_critical_d_fromrholeft("julia/critical-from-rholeft/multiple-rholeft-d.csv")
-# plot_STATESMAP()
+# plot_critical_d_fromrholeft("julia/critical-from-rholeft/multiple-rholeft-d.csv")
+plot_STATESMAP()

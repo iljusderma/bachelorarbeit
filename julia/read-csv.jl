@@ -105,11 +105,12 @@ end
 function plot_fs_impurity_MC_current_deviation(path)
         DATA = CSV.read(path, Tables.matrix, header=0)
         p = scatter((DATA[1, :]) , DATA[2, :], yerr=DATA[3, :], 
-                xlims=(2^4, 2^10), ylims=(10^-7, 10^-2), 
+                xlims=(2^4, 2^12), ylims=(10^-7, 10^-2), 
                 xscale=:log2, yscale=:log10,
-                title="Deviation in MC phase L→∞", xlabel=L"L",
-                ylabel=L"J-1/4", 
-                label="α=1, β=1, p2=1", dpi=300)
+                title="α=1, β=1, d=1", 
+                titleloc=:left, 
+                xlabel=L"L", ylabel=L"J-1/4", 
+                label=false, rightmargin=3mm)
         # linear fit
         @. model(x, par) = par[1]*x^-1
         xdata = DATA[1, :]
@@ -120,7 +121,10 @@ function plot_fs_impurity_MC_current_deviation(path)
         println(params)
         
         # plot fit
-        plot!(xdata, model(xdata, params), label=L"Fit with $ax^{-1}$")
+        plot!(xdata, model(xdata, params), label=L"Fit with $aL^{-1}$", legendfont=12)
+        # xticks
+        xs = 2 .^ (5:1:9)
+        xticks!(p, xs, string.(xs)) 
         savefig("plot.pdf")
 end
 
@@ -147,15 +151,25 @@ function plot_V_p(path, transition)
         savefig("plot.pdf")
 end
 
-function plot_rholeft_d(path)
+function plot_rholeft_d(path, α)
         DATA = CSV.read(path, Tables.matrix, header=0)
         p = scatter(DATA[1, :], (DATA[2, :]),
-                title="α=0.2, β=0.8, L=200",
+                title="α=$α, β=0.8, L=200",
                 titleloc=:left, 
                 xlabel=L"d", 
                 ylabel=L"|\langle \rho_{\mathrm{left}} \rangle - \alpha|",
                 label=false,
-                legendfont=18)
+                legendfont=12)
+        d = DATA[1, :]
+        index=length(d[d .< 0.23])
+        plot!(DATA[1, 1:index], abs.(1 ./(DATA[1, 1:index] .+ 1) .- α),
+        lw=2, label=false)
+        plot!(DATA[1, index:index+1], [1 ./(DATA[1,index] .+1) .- α, 0],
+        lw=2, ls=:dash, label=false, color=palette(:default)[2])
+        plot!(DATA[1, index+1:end], zeros(length(DATA[1, index+1:end])),
+        lw=2, label=false, color=palette(:default)[2])
+        annotate!(0.25, 0.75, (L"|\frac{1}{1+d} - \alpha|", 12))
+        annotate!(0.65, 0.05, (L"|\alpha - \alpha|", 12))
         savefig("plot.pdf")
 end
 
@@ -216,7 +230,6 @@ end
 # plot_current_map("current-200-impurity.csv")
 # plot_V_p("V-p-1order.csv", 1)
 # plot_J_d("J-d-0208-500.csv", 0.2, 0.8)
-# plot_rholeft_d("julia/critical-from-rholeft/rholeft-d-02.csv")
-# plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
-# plot_critical_d_fromrholeft("julia/critical-from-rholeft/multiple-rholeft-d.csv")
-plot_fs_impurity_MC_density_deviation("fs-impurity-MC-density-deviation.csv")
+# plot_rholeft_d("julia/critical-from-rholeft/rholeft-d-02.csv", 0.2)
+plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
+# plot_fs_impurity_MC_density_deviation("fs-impurity-MC-density-deviation.csv")

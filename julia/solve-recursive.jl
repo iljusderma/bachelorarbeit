@@ -20,6 +20,7 @@ function calc_rho(α, β)
 end
 
 function rho_p2_diagram(α, β)
+    # plot theory
     solution = 1000
     RHO = zeros((2,solution))
     P2 = range(0, 1, solution)
@@ -27,12 +28,21 @@ function rho_p2_diagram(α, β)
         RHOAn, RHOBn = iterate(α, β, p2)
         RHO[:, i] = [RHOAn[end], RHOBn[end]]
     end
-    
-    # plot rho(p2)-diagram
-    p = plot(P2, RHO[1,:], 
-    xlabel=L"d", ylabel=L"\rho", title="α=$α, β=$β", 
-    label=L"\rho^A", titleloc=:left, legendfont=14)
-    plot!(P2, RHO[2, :], label=L"\rho^B")
+    plot(P2, RHO[1,:], lw=2, label="Fixed points")
+    plot!(P2, RHO[2,:], lw=2, color=palette(:default)[1], label=false)
+    # scatter numerics
+    solution = 50
+    RHO = zeros((2,solution))
+    P2 = range(0, 1, solution)
+    for (i, p2) in enumerate(P2)
+        RHOAn, RHOBn = iterate(α, β, p2)
+        RHO[:, i] = [RHOAn[end], RHOBn[end]]
+    end
+    scatter!(P2, RHO[1,:], 
+        xlabel=L"d", ylabel=L"\rho", title="α=$α, β=$β", 
+        label=L"numerical $\rho^A$", titleloc=:left, legendfont=12,
+        msw=0, ms=4)
+    scatter!(P2, RHO[2, :], label=L"numerical $\rho^B$", msw=0, ms=4)
     return p
 end
 
@@ -58,5 +68,5 @@ end
 # RHOAn, RHOBn = iterate(0.4, 0.8, 0.6)
 # p = plot(RHOBn[1:10])
 
-p = rho_p2_diagram(0.4, 0.8)
+p = rho_p2_diagram(0.8, 0.8)
 savefig("plot.pdf")
