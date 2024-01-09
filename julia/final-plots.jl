@@ -10,71 +10,101 @@ function TASEP_phases()
     β = 0.8
     p1 = 1
     p2 = 1
-
-    # perform update
+    # first plot
     @time begin
     STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
     end
-
-    # plot data
-    cut_STATES = STATES
-    densityprofile = vec(mean(cut_STATES, dims=2))
-    totaldensity = vec(mean(STATES, dims=1))
-
+    densityprofile = vec(mean(STATES, dims=2))
     plot1 = scatter(densityprofile, msw=0, ms=2,  
         label="α=$α, β=$β", title="a) α=$α, β=$β", titleloc=:left, 
         ylims=[0, 1], titlefont=12, 
         ylabel=L"\langle \rho_i \rangle", 
-        xlabel="Lattice site i", legend=false)
-
+        xlabel=L"Lattice site $i$", 
+        legend=false,
+        bottom_margin=3mm, labelfontsize=9)
+    # second plot
     α=0.8
     @time begin
     STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
     end
-    # plot data
-    cut_STATES = STATES
-    densityprofile = vec(mean(cut_STATES, dims=2))
-    totaldensity = vec(mean(STATES, dims=1))
-
+    densityprofile = vec(mean(STATES, dims=2))
     plot2 = scatter(densityprofile, msw=0, ms=2,  
         label="α=$α, β=$β", title="b) α=$α, β=$β", titleloc=:left, 
         ylims=[0, 1], titlefont=12, 
         ylabel=L"\langle \rho_i \rangle", 
-        xlabel="Lattice site i", legend=false)
-
+        xlabel=L"Lattice site $i$", legend=false, 
+        bottom_margin=3mm, labelfontsize=9)
+    # third plot
     β=0.4
     @time begin
     STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
     end
-    # plot data
-    cut_STATES = STATES
-    densityprofile = vec(mean(cut_STATES, dims=2))
-    totaldensity = vec(mean(STATES, dims=1))
-
+    densityprofile = vec(mean(STATES, dims=2))
     plot3 = scatter(densityprofile, msw=0, ms=2,  
         label="α=$α, β=$β", title="c) α=$α, β=$β", titleloc=:left, 
         ylims=[0, 1], titlefont=12, 
         ylabel=L"\langle \rho_i \rangle", 
-        xlabel="Lattice site i", legend=false)
-
+        xlabel=L"Lattice site $i$", legend=false,
+        bottom_margin=3mm, labelfontsize=9)
+    # 4-th plot
     α=0.3
     β=0.3
     STATES, CURRENT = simulate(α, β, L, 5_000, p1, p2)
     densityprofile = vec(mean(STATES, dims=2))
-
     plot4 = scatter(densityprofile, msw=0, ms=2,  
         label="α=$α, β=$β", title="d) α=$α, β=$β", titleloc=:left, 
         ylims=[0, 1], titlefont=12, 
         ylabel=L"\langle \rho_i \rangle", 
-        xlabel="Lattice site i", legend=false)
-
-
-    #animate(500, t0, STATES, α, β, p1)
-
-    #plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{p_2+1}")
-    #plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{p_2}{p_2+1}")
-    #println(mean(CURRENT))
+        xlabel=L"Lattice site $i$", legend=false, 
+        bottom_margin=3mm, labelfontsize=9)
+    # subplot
     plot(plot1, plot2, plot3, plot4, layout = 4)
+    savefig("plot.pdf")
+end
+
+function modified_TASEP_overview()
+    t0 = Int(5e5) # one time unit includes L updates of the lattice
+    L = 300
+    α = 0.4
+    β = 0.8
+    p1 = 1
+    p2 = 0.25
+    STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
+    densityprofile = vec(mean(STATES, dims=2))
+    plot1 = scatter(densityprofile, msw=0, ms=2, 
+        title="a) α=$α, β=$β", titleloc=:left, titlefont=12, 
+        label=L"$d$ = $0.25$",  
+        ylims=[0, 1],
+        ylabel=L"\langle \rho_i \rangle", 
+        ticks=false, 
+        legend=:topright, legendfont=10,
+        labelfontsize=10, leftmargin=7mm)
+    p2 = 0.85
+    STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
+    densityprofile = vec(mean(STATES, dims=2))
+    scatter!(densityprofile, msw=0, ms=2,  
+        label=L"$d$ = $0.85$")
+    hline!([α], label=L"\alpha", ls=:dash, lw=2, linealpha=0.8)
+    # second plot
+    α=0.8
+    p2=0.25
+    STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
+    densityprofile = vec(mean(STATES, dims=2))
+    plot2 = scatter(densityprofile, msw=0, ms=2,  
+        label=L"$d$ = $0.25$", 
+        title="b) α=$α, β=$β", titleloc=:left, titlefont=12, 
+        ylims=[0, 1],
+        ylabel=L"\langle \rho_i \rangle", 
+        legend=:topright, 
+        ticks=false, 
+        legendfont=10, labelfontsize=10, leftmargin=5mm)
+    p2=0.85
+    STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
+    densityprofile = vec(mean(STATES, dims=2))
+    scatter!(densityprofile, msw=0, ms=2,  
+        label=L"$d$ = $0.85$")
+    hline!([0.5], label=L"0.5", ls=:dash, lw=2, linealpha=0.8)
+    plot(plot1, plot2, layout = 2, size=(800, 400))
     savefig("plot.pdf")
 end
 
@@ -92,14 +122,15 @@ function modified_TASEP_phases(phase)
     # LD phase
     STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
     densityprofile = vec(mean(STATES, dims=2))
-    plot1 = scatter(densityprofile, msw=0, ms=2, 
+    plot(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{d+1}", lw=2)
+    scatter!(densityprofile, msw=0, ms=2, 
         title="α=$α, β=$β", titleloc=:left, titlefont=12, 
         label=L"$d$ = $0.25$",  
         ylims=[0, 1],
         ylabel=L"\langle \rho_i \rangle", 
-        xlabel=L"Lattice site $i$", legend=:outerright, legendfont=12)
+        xlabel=L"Lattice site $i$", legend=:outertopright, legendfont=10,
+        labelfontsize=10)
     y = zeros(L) .+ α/p2
-    plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{d+1}", lw=2)
     plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{d}{d+1}", lw=2)
     p2 = 0.85
     STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
@@ -115,20 +146,21 @@ function modified_TASEP_phases(phase)
     p2=0.25
     STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
     densityprofile = vec(mean(STATES, dims=2))
-    plot2 = scatter(densityprofile, msw=0, ms=2,  
+    plot(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{d+1}", lw=2)
+    scatter!(densityprofile, msw=0, ms=2,  
         label=L"$d$ = $0.25$", 
         title="α=$α, β=$β", titleloc=:left, titlefont=12, 
         ylims=[0, 1],
         ylabel=L"\langle \rho_i \rangle", 
-        xlabel=L"Lattice site $i$", legend=:outerright, legendfont=12)
-    plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{d+1}", lw=2)
+        xlabel=L"Lattice site $i$", legend=:outerright, 
+        legendfont=10, labelfontsize=10)
     plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{d}{d+1}", lw=2)
     p2=0.85
     STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
     densityprofile = vec(mean(STATES, dims=2))
     scatter!(densityprofile, msw=0, ms=2,  
         label=L"$d$ = $0.85$")
-    plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=false, color=palette(:default)[2], lw=2)
+    plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=false, color=palette(:default)[1], lw=2)
     plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=false, color=palette(:default)[3], lw=2)
     end
     
@@ -138,14 +170,15 @@ function modified_TASEP_phases(phase)
     β = 0.4
     STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
     densityprofile = vec(mean(STATES, dims=2))
-    plot3 = scatter(densityprofile, msw=0, ms=2,  
+    plot(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{d+1}", lw=2)
+    scatter!(densityprofile, msw=0, ms=2,  
         label=L"$d$ = $0.25$", 
         title="α=$α, β=$β", titleloc=:left, titlefont=12, 
         ylims=[0, 1],
         ylabel=L"\langle \rho_i \rangle", 
-        xlabel=L"Lattice site $i$", legend=:outerright, legendfont=12)
+        xlabel=L"Lattice site $i$", legend=:outerright, 
+        legendfont=10, labelfontsize=10)
     y = zeros(L) .+ (1-β/p2)
-    plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{d+1}", lw=2)
     plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{d}{d+1}", lw=2)
     p2 = 0.85
     STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
@@ -285,7 +318,47 @@ function plot_STATESMAP()
     savefig("plot.pdf")
 end
 
-# modified_TASEP_phases(3)
+function density_deviation_sketch()
+    t0 = Int(1e6) # one time unit includes L updates of the lattice
+    L = 500
+    α = 0.8
+    β = 0.8
+    p1 = 1
+    p2 = 0.3
+    STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
+    densityprofile = vec(mean(STATES, dims=2))
+    plot1 = scatter(densityprofile[1:Int(L/2)+1], msw=0, ms=2, 
+        title="a) α=$α, β=$β", titleloc=:left, titlefont=12, 
+        label=L"$d$ = $0.3$",  
+        ylims=[0.67, 0.87],
+        ylabel=L"\langle \rho_i \rangle",
+        legend=:topright, legendfont=10,
+        labelfontsize=10, left_margin=3mm)
+    plot!(1:251, zeros(251).+ 1/(p2+1), ls=:dash, label=L"\frac{1}{d+1}", lw=2)
+    plot!([125, 125], [0.795, 0.77], line=:arrow, label=false, color=:black, lw=2)
+    plot!([125, 125], [0.717, 0.742], line=:arrow, label=false, color=:black, lw=2)
+    # density deviation
+    path = "fs-impurity-MC-density-deviation.csv"
+    DATA = CSV.read(path, Tables.matrix, header=0)
+    plot2 = scatter((DATA[1, :]) , DATA[2, :], 
+            title="b) α=0.8, β=0.8, d=0.3", 
+            titleloc=:left, 
+            ylims=(0, 0.06), xlabel=L"L",
+            ylabel=L"\rho_{\mathrm{left, approx}} - \langle \rho_{\mathrm{left}} \rangle", 
+            label=false, 
+            legendfont=10, bottom_margin=3mm, leftmargin=5mm)
+    deviation = mean(DATA[2, :])
+    deviation_err = std(DATA[2, :])/sqrt(length(DATA[2, :]))
+    println(deviation, deviation_err)
+    hline!([deviation], yerr=[deviation_err], label=false, lw=2)
+    plot(plot1, plot2, layout=2, size=(800, 400))
+    savefig("plot.pdf")
+end
+
+# TASEP_phases()
+# modified_TASEP_overview()
+# modified_TASEP_phases(1)
 # plot_current_map_standard("current-200.csv")
 # plot_critical_d_fromrholeft("julia/critical-from-rholeft/multiple-rholeft-d.csv")
-plot_STATESMAP()
+# plot_STATESMAP()
+density_deviation_sketch()

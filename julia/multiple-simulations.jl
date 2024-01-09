@@ -44,15 +44,16 @@ function V_p_1order(t0)
     RHO10 = calc_V_p_curve(ALPHA, BETA, gridsize, t0, 10)
     RHO500 = calc_V_p_curve(ALPHA, BETA, gridsize, t0, 500)
     p = BETA .- ALPHA
-    scatter(p, RHO10, label="L=10", 
+    scatter(p, RHO10, label=L"L=10", 
         xlabel=L"p", ylabel=L"V", ms=3, 
-        msw=0, ylims=[0, 1], legend_font=12)
-    scatter!(p, RHO500, label="L=500", ms=3, msw=0)
+        msw=0, ylims=[0, 1], 
+        legendfontsize=10)
+    scatter!(p, RHO500, label=L"L=500", ms=3, msw=0)
     leap = zeros(gridsize)
     mid = Int(floor(gridsize*0.5))
     leap[1:mid] .= -0.5 .*p[1:mid] .+ α0
     leap[mid+1:end] .= -0.5 .*p[mid+1:end] .+ (1-α0)
-    plot!(p[1:25], leap[1:25], lw=2, label="L ⟶ ∞")
+    plot!(p[1:25], leap[1:25], lw=2, label=L"L \rightarrow \infty")
     plot!(p[25:26], leap[25:26], linestyle=:dash, lw=2, label=false, color=palette(:default)[3])
     plot!(p[26:50], leap[26:50], lw=2, label=false, color=palette(:default)[3])
     savefig("plot.pdf")
@@ -67,16 +68,16 @@ function V_p_2order(t0)
     RHO10 = calc_V_p_curve(ALPHA, BETA, gridsize, t0, 10)
     RHO500 = calc_V_p_curve(ALPHA, BETA, gridsize, t0, 500)
     p = BETA .- ALPHA
-    scatter(p, RHO10, label="L=10", 
+    scatter(p, RHO10, label=L"L=10", 
         xlabel=L"p", ylabel=L"V", 
-        msw=0, ylims=[0, 1], legendfont=12)
-    scatter!(p, RHO500, label="L=500", ms=3, msw=0)
+        msw=0, ylims=[0, 1], legendfont=10)
+    scatter!(p, RHO500, label=L"L=500", ms=3, msw=0)
     # draw limit L → ∞
     y = zeros(gridsize)
     mid = Int(floor(0.5*length(y)))
     y[1:mid] .= 1 .- (p[1:mid] .+ α0) # ∼1-β
     y[mid+1:end] .= 0.5
-    plot!(p, y, label="L ⟶ ∞", lw=2)
+    plot!(p, y, label=L"L \rightarrow \infty", lw=2)
     savefig("plot.pdf")
     CSV.write("V-p-2order.csv",  Tables.table([p, RHO10, RHO500]), writeheader=false)
 end

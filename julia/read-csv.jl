@@ -231,5 +231,5 @@ end
 # plot_V_p("V-p-1order.csv", 1)
 # plot_J_d("J-d-0208-500.csv", 0.2, 0.8)
 # plot_rholeft_d("julia/critical-from-rholeft/rholeft-d-02.csv", 0.2)
-plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
-# plot_fs_impurity_MC_density_deviation("fs-impurity-MC-density-deviation.csv")
+# plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
+plot_fs_impurity_MC_density_deviation("fs-impurity-MC-density-deviation.csv")
