@@ -76,9 +76,11 @@ function modified_TASEP_overview()
         label=L"$d$ = $0.25$",  
         ylims=[0, 1],
         ylabel=L"\langle \rho_i \rangle", 
+        xlabel=L"Site $i$",
         ticks=false, 
         legend=:topright, legendfont=10,
-        labelfontsize=10, leftmargin=7mm)
+        labelfontsize=10, leftmargin=7mm, 
+        bottom_margin=3mm)
     p2 = 0.85
     STATES, CURRENT = simulate(α, β, L, t0, p1, p2)
     densityprofile = vec(mean(STATES, dims=2))
@@ -95,6 +97,7 @@ function modified_TASEP_overview()
         title="b) α=$α, β=$β", titleloc=:left, titlefont=12, 
         ylims=[0, 1],
         ylabel=L"\langle \rho_i \rangle", 
+        xlabel=L"Site $i$",
         legend=:topright, 
         ticks=false, 
         legendfont=10, labelfontsize=10, leftmargin=5mm)
@@ -356,9 +359,9 @@ function density_deviation_sketch()
 end
 
 # TASEP_phases()
-# modified_TASEP_overview()
+modified_TASEP_overview()
 # modified_TASEP_phases(1)
 # plot_current_map_standard("current-200.csv")
 # plot_critical_d_fromrholeft("julia/critical-from-rholeft/multiple-rholeft-d.csv")
 # plot_STATESMAP()
-density_deviation_sketch()
+# density_deviation_sketch()
