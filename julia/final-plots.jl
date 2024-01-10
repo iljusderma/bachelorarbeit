@@ -214,17 +214,20 @@ function plot_current_map_standard(path)
     Z = @. calc_current(ALPHA, BETA', 1)
     h = heatmap(ALPHA, BETA, FLUX, 
         top_margin=7mm, 
-        xlabel=L"Exit rate $\beta$", 
-        ylabel=L"Entry rate $\alpha$", 
+        xlabel=L"$\beta$", 
+        ylabel=L"$\alpha$", 
         aspectratio=true, xlims=(0,1), 
         legendfont=14)
     plot!(range(0.5, 1.0, 10), zeros(10) .+ 0.5, color=:darkgreen, label=false)
     plot!(zeros(10) .+ 0.5, range(0.5, 1.0, 10), color=:darkgreen, label=false)
     plot!(range(0, 0.5, 10),range(0, 0.5, 10), color=:darkgreen, label=false)
-    annotate!(0.75, 0.7, ("Maximum current \n phase", 8, :green, "Helvetica Bold"))
-    annotate!(0.32, 0.6, ("High density \n phase", 8, :green, "Helvetica Bold"))
-    annotate!(0.7, 0.35, ("Low density \n phase", 8, :green, "Helvetica Bold"))
-    annotate!(1.1, 1.1, (L"Current $J$", 12))
+    annotate!(0.75, 0.7, ("Maximum Current \n phase", 8, :green, "Helvetica Bold"))
+    annotate!(0.75, 0.61, (L"\mathbf{J=\frac{1}{4}}", 8, :green))
+    annotate!(0.32, 0.6, ("High Density \n phase", 8, :green, "Helvetica Bold"))
+    annotate!(0.32, 0.53, (L"\mathbf{J=\beta(1-\beta)}", 8, :green))
+    annotate!(0.7, 0.4, ("Low Density \n phase", 8, :green, "Helvetica Bold"))
+    annotate!(0.7, 0.33, (L"\mathbf{J=\alpha(1-\alpha)}", 8, :green))
+    annotate!(1.1, 1.1, (L"$J$", 12))
     savefig("plot.pdf")
 end
 
@@ -315,9 +318,9 @@ function plot_STATESMAP()
         cbar=false)
     scatter!([50, 250, 150], [2500, 3000, 300], color=:white,
         ms=18)
-    annotate!(50,2500, "(a)")
-    annotate!(250,3000, "(b)")
-    annotate!(150,300, "(c)")
+    annotate!(50,2500, "a)")
+    annotate!(250,3000, "b)")
+    annotate!(150,300, "c)")
     savefig("plot.pdf")
 end
 
@@ -359,9 +362,9 @@ function density_deviation_sketch()
 end
 
 # TASEP_phases()
-modified_TASEP_overview()
+# modified_TASEP_overview()
 # modified_TASEP_phases(1)
 # plot_current_map_standard("current-200.csv")
 # plot_critical_d_fromrholeft("julia/critical-from-rholeft/multiple-rholeft-d.csv")
-# plot_STATESMAP()
+plot_STATESMAP()
 # density_deviation_sketch()
