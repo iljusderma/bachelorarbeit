@@ -30,8 +30,8 @@ function plot_current_map(path)
         Z = @. calc_current(ALPHA, BETA', p2)
         h = heatmap(ALPHA, BETA, FLUX, 
                 topmargin=7mm, 
-                xlabel=L"Exit rate $\beta$", 
-                ylabel=L"Entry rate $\alpha$", 
+                xlabel=L"$\beta$", 
+                ylabel=L"$\alpha$", 
                 aspectratio=true, xlims=(0,1), 
                 legendfont=14)
         contour!(ALPHA, BETA, Z, levels=range(0, p2/(1+p2)^2, 6)[2:end], color=:lightrainbow, lw=3)
@@ -227,9 +227,9 @@ function plot_J_d(path, α, β)
         savefig("plot.pdf")
 end
 
-# plot_current_map("current-200-impurity.csv")
+plot_current_map("current-200-impurity.csv")
 # plot_V_p("V-p-1order.csv", 1)
 # plot_J_d("J-d-0208-500.csv", 0.2, 0.8)
 # plot_rholeft_d("julia/critical-from-rholeft/rholeft-d-02.csv", 0.2)
 # plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
-plot_fs_impurity_MC_density_deviation("fs-impurity-MC-density-deviation.csv")
+# plot_fs_impurity_MC_density_deviation("fs-impurity-MC-density-deviation.csv")

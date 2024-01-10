@@ -131,7 +131,7 @@ function modified_TASEP_phases(phase)
         label=L"$d$ = $0.25$",  
         ylims=[0, 1],
         ylabel=L"\langle \rho_i \rangle", 
-        xlabel=L"Lattice site $i$", legend=:outertopright, legendfont=10,
+        xlabel=L"Lattice site $i$", legend=:outerright, legendfont=10,
         labelfontsize=10)
     y = zeros(L) .+ α/p2
     plot!(251:500, zeros(250).+ p2/(p2+1), ls=:dash, label=L"\frac{d}{d+1}", lw=2)
@@ -260,18 +260,12 @@ function plot_critical_d_fromrholeft(path)
     params = @. round(fit.param, digits=2)
 
     # plot fit
-    plot!(xdata[1:7], model(xdata[1:7], params), label=L"Fit with $ax$", lw=2)
-    plot!(xdata[7:end], model(xdata[7:end], params), ls=:dash, label=:none, lw=2)
+    plot!(xdata[1:7], model(xdata[1:7], params), label="Linear fit", lw=2)
+    plot!(xdata[7:end], model(xdata[7:end], params), color=palette(:default)[2], ls=:dash, label=:none, lw=2)
     α = 0:0.005:0.5
     plot!(α, α ./ (1 .- α), label=L"\frac{\alpha}{1-\alpha}", lw=2)
 
     # first subplot
-    # histogram!(
-    #     randn(1000),
-    #     inset = (1, bbox(0.05, 0.05, 0.25, 0.25, :top, :left)),
-    #     ticks = nothing,
-    #     subplot = 2,
-    #     bg_inside = nothing)
     path = "julia/critical-from-rholeft/rholeft-d-02.csv"
     DATA = CSV.read(path, Tables.matrix, header=0)
     scatter!(DATA[1, :], (DATA[2, :]), msw=0, ms=2,
@@ -337,6 +331,7 @@ function density_deviation_sketch()
         title="a) α=$α, β=$β", titleloc=:left, titlefont=12, 
         label=L"$d$ = $0.3$",  
         ylims=[0.67, 0.87],
+        xlabel=L"Site $i$",
         ylabel=L"\langle \rho_i \rangle",
         legend=:topright, legendfont=10,
         labelfontsize=10, left_margin=3mm)
@@ -366,5 +361,5 @@ end
 # modified_TASEP_phases(1)
 # plot_current_map_standard("current-200.csv")
 # plot_critical_d_fromrholeft("julia/critical-from-rholeft/multiple-rholeft-d.csv")
-plot_STATESMAP()
-# density_deviation_sketch()
+# plot_STATESMAP()
+density_deviation_sketch()
