@@ -45,7 +45,7 @@ function V_p_1order(t0)
     RHO500 = calc_V_p_curve(ALPHA, BETA, gridsize, t0, 500)
     p = BETA .- ALPHA
     scatter(p, RHO10, label=L"L=10", 
-        xlabel=L"p", ylabel=L"V", ms=3, 
+        xlabel=L"(\beta - \alpha)", ylabel=L"\rho", ms=3, 
         msw=0, ylims=[0, 1], 
         legendfontsize=10)
     scatter!(p, RHO500, label=L"L=500", ms=3, msw=0)
@@ -53,26 +53,30 @@ function V_p_1order(t0)
     mid = Int(floor(gridsize*0.5))
     leap[1:mid] .= -0.5 .*p[1:mid] .+ α0
     leap[mid+1:end] .= -0.5 .*p[mid+1:end] .+ (1-α0)
-    plot!(p[1:25], leap[1:25], lw=2, label=L"L \rightarrow \infty")
-    plot!(p[25:26], leap[25:26], linestyle=:dash, lw=2, label=false, color=palette(:default)[3])
-    plot!(p[26:50], leap[26:50], lw=2, label=false, color=palette(:default)[3])
+    plot!([-0.2, 0], [1, 0.9], lw=2, label=L"L \rightarrow \infty")
+    plot!([0, 0], [0.9, 0.1], linestyle=:dash, lw=2, label=false, color=palette(:default)[3])
+    plot!([0, 0.2], [0.1, 0], lw=2, label=false, color=palette(:default)[3])
     savefig("plot.pdf")
     CSV.write("V-p-1order.csv",  Tables.table([p, RHO10, RHO500]), writeheader=false)
 end
 
 function V_p_2order(t0)
     gridsize = 50
-    α0 = 0.7
+    α0 = 0.8
     ALPHA = zeros(gridsize) .+ α0
     BETA = range(0.2, 0.8, gridsize) # apply transition at β=0.5
     RHO10 = calc_V_p_curve(ALPHA, BETA, gridsize, t0, 10)
     RHO500 = calc_V_p_curve(ALPHA, BETA, gridsize, t0, 500)
     p = BETA .- ALPHA
     scatter(p, RHO10, label=L"L=10", 
-        xlabel=L"p", ylabel=L"V", 
-        msw=0, ylims=[0, 1], legendfont=10)
+        xlabel=L"(\beta - \alpha)", ylabel=L"\rho", 
+        msw=0, ms=3, ylims=[0.4, 0.8], legendfont=10)
     scatter!(p, RHO500, label=L"L=500", ms=3, msw=0)
-    # draw limit L → ∞
+    # draw limit L → ∞ with more exact gridsize
+    gridsize=1000
+    ALPHA = zeros(gridsize) .+ α0
+    BETA = range(0.2, 0.8, gridsize) # apply transition at β=0.5
+    p = BETA .- ALPHA
     y = zeros(gridsize)
     mid = Int(floor(0.5*length(y)))
     y[1:mid] .= 1 .- (p[1:mid] .+ α0) # ∼1-β
@@ -208,5 +212,5 @@ L = 200
 # rholeft_p2(0.3, 0.8, 200, 20_000)
 # rhoright_d(0.3, 0.8, 200, 20_000)
 # J_d(0.4, 0.8, 500, 50_000)
-# V_p_1order(50_000)
+# V_p_1order(100_000)
 V_p_2order(100_000)
