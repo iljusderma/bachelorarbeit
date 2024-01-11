@@ -61,7 +61,7 @@ function V_p_1order(t0)
             legend=false, grid=false,
             inset = (1, bbox(0.1, 0.1, 0.2, 0.3, :bottom, :left)),
             ticks = [0.2],
-            subplot = 2,
+            subplot = 2, framestyle=:box, 
             bg_inside = nothing, color=:black)
     plot!([0.5, 1], [0.5, 0.5], subplot=2, color=:black)
     annotate!(0.6, 0.25, ("LD", 8), subplot=2)
@@ -100,7 +100,7 @@ function V_p_2order(t0)
             inset = (1, bbox(0.1, 0.1, 0.2, 0.3, :bottom, :left)),
             xticks = [0.2, 0.8],
             yticks = [0.8],
-            subplot = 2,
+            subplot = 2, framestyle=:box, 
             bg_inside = nothing, color=:black)
     plot!([0.5, 1], [0.5, 0.5], subplot=2, color=:black)
     annotate!(0.6, 0.25, ("LD", 8), subplot=2)
@@ -237,5 +237,5 @@ L = 200
 # rholeft_p2(0.3, 0.8, 200, 20_000)
 # rhoright_d(0.3, 0.8, 200, 20_000)
 # J_d(0.4, 0.8, 500, 50_000)
-# V_p_1order(100_000)
-V_p_2order(100_000)
+V_p_1order(100_000)
+# V_p_2order(100_000)
