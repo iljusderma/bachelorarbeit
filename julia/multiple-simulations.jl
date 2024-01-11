@@ -46,7 +46,7 @@ function V_p_1order(t0)
     p = BETA .- ALPHA
     scatter(p, RHO10, label=L"L=10", 
         xlabel=L"(\beta - \alpha)", ylabel=L"\rho", ms=3, 
-        msw=0, ylims=[0, 1], 
+        msw=0, ylims=[0, 1], grid=false, 
         legendfontsize=10)
     scatter!(p, RHO500, label=L"L=500", ms=3, msw=0)
     leap = zeros(gridsize)
@@ -56,6 +56,18 @@ function V_p_1order(t0)
     plot!([-0.2, 0], [1, 0.9], lw=2, label=L"L \rightarrow \infty")
     plot!([0, 0], [0.9, 0.1], linestyle=:dash, lw=2, label=false, color=palette(:default)[3])
     plot!([0, 0.2], [0.1, 0], lw=2, label=false, color=palette(:default)[3])
+    # insert boxplot
+    plot!([0, 0.5, 0.5], [0, 0.5, 1], 
+            legend=false, grid=false,
+            inset = (1, bbox(0.1, 0.1, 0.2, 0.3, :bottom, :left)),
+            ticks = [0.2],
+            subplot = 2,
+            bg_inside = nothing, color=:black)
+    plot!([0.5, 1], [0.5, 0.5], subplot=2, color=:black)
+    annotate!(0.6, 0.25, ("LD", 8), subplot=2)
+    annotate!(0.25, 0.6, ("HD", 8), subplot=2)
+    annotate!(0.7, 0.7, ("MC", 8), subplot=2)
+    plot!([0, 0.2], [0.2, 0], color=:purple, line=:arrow, label=false, subplot=2)
     savefig("plot.pdf")
     CSV.write("V-p-1order.csv",  Tables.table([p, RHO10, RHO500]), writeheader=false)
 end
@@ -68,7 +80,7 @@ function V_p_2order(t0)
     RHO10 = calc_V_p_curve(ALPHA, BETA, gridsize, t0, 10)
     RHO500 = calc_V_p_curve(ALPHA, BETA, gridsize, t0, 500)
     p = BETA .- ALPHA
-    scatter(p, RHO10, label=L"L=10", 
+    scatter(p, RHO10, label=L"L=10", grid=false, 
         xlabel=L"(\beta - \alpha)", ylabel=L"\rho", 
         msw=0, ms=3, ylims=[0.4, 0.8], legendfont=10)
     scatter!(p, RHO500, label=L"L=500", ms=3, msw=0)
@@ -82,6 +94,19 @@ function V_p_2order(t0)
     y[1:mid] .= 1 .- (p[1:mid] .+ α0) # ∼1-β
     y[mid+1:end] .= 0.5
     plot!(p, y, label=L"L \rightarrow \infty", lw=2)
+    # insert boxplot
+    plot!([0, 0.5, 0.5], [0, 0.5, 1], 
+            legend=false, grid=false, 
+            inset = (1, bbox(0.1, 0.1, 0.2, 0.3, :bottom, :left)),
+            xticks = [0.2, 0.8],
+            yticks = [0.8],
+            subplot = 2,
+            bg_inside = nothing, color=:black)
+    plot!([0.5, 1], [0.5, 0.5], subplot=2, color=:black)
+    annotate!(0.6, 0.25, ("LD", 8), subplot=2)
+    annotate!(0.25, 0.6, ("HD", 8), subplot=2)
+    annotate!(0.7, 0.7, ("MC", 8), subplot=2)
+    plot!([0.2, 0.8], [0.8, 0.8], color=:purple, line=:arrow, label=false, subplot=2)
     savefig("plot.pdf")
     CSV.write("V-p-2order.csv",  Tables.table([p, RHO10, RHO500]), writeheader=false)
 end
