@@ -356,10 +356,36 @@ function density_deviation_sketch()
     savefig("plot.pdf")
 end
 
+function phase_diagrams()
+    ticks = ["0", "0.5", "1"]
+    plot1 = plot([0, 0.5, 1], [0, 0.5, 0.5], color=:black, 
+    aspectratio=1, label=false, xlabel=L"\alpha", ylabel=L"\beta", 
+    xlims=[0,1], ylims=[0,1], 
+    ticks=([0, 0.5, 1], ticks), leftmargin=3mm)
+    plot!([0.5, 0.5], [0.5, 1], color=:black, label=false)
+    annotate!(0.6, 0.25, ("LD", 10))
+    annotate!(0.25, 0.6, ("HD",10))
+    annotate!(0.7, 0.7, ("MC", 10))
+    d = 0.3
+    phase_boundary= round(d/(d+1), digits=2)
+    ticks=["0", L"\frac{d}{d+1}", "1"]
+    plot2 = plot([0, phase_boundary, 1], [0, phase_boundary, phase_boundary], color=:black, 
+    aspectratio=1, label=false, xlabel=L"\alpha", ylabel=L"\beta",
+    xlims=[0,1], ylims=[0,1], 
+    ticks=([0, phase_boundary, 1], ticks), leftmargin=16mm, rightmargin=3mm)
+    plot!([phase_boundary, phase_boundary], [phase_boundary, 1], color=:black, label=false)
+    annotate!(0.6, 0.12, ("LD", 10))
+    annotate!(0.12, 0.6, ("HD", 10))
+    annotate!(0.6, 0.6, ("MC", 10))
+    plot(plot1, plot2, layout=2, size=(830, 400))
+    savefig("plot.pdf")
+end
+
 # TASEP_phases()
 # modified_TASEP_overview()
 # modified_TASEP_phases(1)
-plot_current_map_standard("current-200.csv")
+# plot_current_map_standard("current-200.csv")
 # plot_critical_d_fromrholeft("julia/critical-from-rholeft/multiple-rholeft-d.csv")
 # plot_STATESMAP()
 # density_deviation_sketch()
+phase_diagrams()
