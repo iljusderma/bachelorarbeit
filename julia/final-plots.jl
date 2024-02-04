@@ -381,6 +381,18 @@ function phase_diagrams()
     savefig("plot.pdf")
 end
 
+function approximation_sketch()
+    α=0.4
+    scatter([0.5], [0.4], ms=4, color=:white, msw=4,  
+        label=false, xlims=(0,1), ylims=(0,1), grid=false, 
+        yticks=([0.4], [L"\alpha"]), xticks=([0.5], [L"I"]), 
+        tickfont=16, axis_lw=4)
+    plot!([0, 0.492], [0.4, 0.4], label=false, color=:black, lw=4)
+    plot!([0.508, 1], [0.4, 0.4], label=false, color=:black, lw=4)
+    scatter!([0.5], [0.5], color=:black, label=false)
+    savefig("plot.svg")
+end
+
 # TASEP_phases()
 # modified_TASEP_overview()
 # modified_TASEP_phases(1)
@@ -388,4 +400,5 @@ end
 # plot_critical_d_fromrholeft("julia/critical-from-rholeft/multiple-rholeft-d.csv")
 # plot_STATESMAP()
 # density_deviation_sketch()
-phase_diagrams()
+#phase_diagrams()
+approximation_sketch()
