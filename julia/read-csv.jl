@@ -1,4 +1,4 @@
-using CSV, Tables, Plots, LaTeXStrings, LsqFit, Statistics
+using CSV, Tables, Plots, LaTeXStrings, LsqFit, Statistics, Measures
 
 function expected_current()
         gridsize = 200
@@ -35,8 +35,9 @@ function plot_current_map(path)
                 aspectratio=true, xlims=(0,1), 
                 legendfont=14)
         contour!(ALPHA, BETA, Z, levels=range(0, p2/(1+p2)^2, 6)[2:end], color=:lightrainbow, lw=3)
-        hline!([p2/(1+p2)], ls=:dash, color=:black, label=L"\alpha_c", legend=:topright)
-        vline!([p2/(1+p2)], ls=:dash, color=:black, label=L"\beta_c")
+        plot!([p2/(1+p2), 1], [p2/(1+p2), p2/(1+p2)], ls=:dash, color=:black, label=L"\alpha_c", legend=:topright)
+        plot!([p2/(1+p2), p2/(1+p2)], [p2/(1+p2), 1], ls=:dash, color=:black, label=L"\beta_c")
+        plot!([0, p2/(1+p2)], [0, p2/(1+p2)], ls=:dash, color=:black, label=false)
         annotate!(1.1, 1.05, (L"Current $J$", 11))
         savefig("plot.pdf")
 end
@@ -227,9 +228,9 @@ function plot_J_d(path, α, β)
         savefig("plot.pdf")
 end
 
-# plot_current_map("current-200-impurity.csv")
+plot_current_map("current-200-impurity.csv")
 # plot_V_p("V-p-1order.csv", 1)
 # plot_J_d("J-d-0208-500.csv", 0.2, 0.8)
-plot_rholeft_d("julia/critical-from-rholeft/rholeft-d-02.csv", 0.2)
+#plot_rholeft_d("julia/critical-from-rholeft/rholeft-d-02.csv", 0.2)
 # plot_fs_impurity_MC_current_deviation("fs-impurity-MC-current-deviation.csv")
 # plot_fs_impurity_MC_density_deviation("fs-impurity-MC-density-deviation.csv")
